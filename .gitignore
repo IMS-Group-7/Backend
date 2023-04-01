@@ -1,0 +1,9 @@
+# compiled output
+app/dist
+app/node_modules
+
+# OS
+.DS_Store
+
+# env
+app/.env
