@@ -5,40 +5,40 @@ import { errorMiddleware } from './api/middlewares';
 import { config } from '../common/config';
 
 class App {
-  public app: express.Application;
+  public expressApp: express.Application;
   public port: number;
 
   constructor(port: number) {
-    this.app = express();
+    this.expressApp = express();
     this.port = port;
 
     this.initMiddlewares();
-    this.initControllers();
+    this.initRouters();
     this.initErrorHandling();
   }
 
   private initMiddlewares(): void {
-    this.app.use(express.json());
-    this.app.use(
+    this.expressApp.use(express.json());
+    this.expressApp.use(
       express.urlencoded({
         extended: false,
         limit: config.MAXIMUM_REQUEST_BODY_SIZE,
       }),
     );
-    this.app.use(cors({ origin: '*' }));
+    this.expressApp.use(cors({ origin: '*' }));
   }
 
-  private initControllers(): void {
-    this.app.use(router);
-    this.app.use('/api', router);
+  private initRouters(): void {
+    this.expressApp.use(router);
+    this.expressApp.use('/api', router);
   }
 
   private initErrorHandling(): void {
-    this.app.use(errorMiddleware);
+    this.expressApp.use(errorMiddleware);
   }
 
   public listen(): void {
-    this.app
+    this.expressApp
       .listen(this.port, () => {
         console.log(`Listening on port ${this.port}`);
       })

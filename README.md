@@ -1,10 +1,10 @@
-### Docker
+# Backend
 
-# Installation
+## Docker Installation
 
 Install docker: https://www.docker.com/products/docker-desktop/
 
-# Starting and Stopping
+## Starting and Stopping
 
 ### Prerequisites
 
@@ -18,16 +18,16 @@ create a `.env` file inside `app` directory with variables matching the `.env.ex
 
     $ docker-compose -f docker-compose.prod.yml up
 
-### Stop the docker containers
+### Stop all docker containers
 
     $ docker-compose down
 
-# Add Packages
+## Add Packages
 
     $ cd ./app/
     $ npm install <package name>
 
-# Testing
+## Testing
 
     $ cd ./app/
     $ npm test
