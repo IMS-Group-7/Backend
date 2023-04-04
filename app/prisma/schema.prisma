@@ -1,0 +1,32 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Mower {
+  id                  Int                   @id @default(autoincrement())
+  serialNumber        String
+  Coordinates         Coordinates[]
+  CollisionAvoidances CollisionAvoidances[]
+}
+
+model Coordinates {
+  id          Int     @id @default(autoincrement())
+  mower       Mower   @relation(fields: [mowerId], references: [id])
+  mowerId     Int
+  x           Int
+  y           Int
+  is_boundary Boolean
+  timestamp   String
+}
+
+model CollisionAvoidances {
+  id        Int    @id @default(autoincrement())
+  mower     Mower  @relation(fields: [mowerId], references: [id])
+  mowerId   Int
+  x         Int
+  y         Int
+  imagePath String
+  object    String
+  timestamp String
+}
