@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import router from './api/routers';
 import { errorMiddleware } from './api/middlewares';
 import { config } from '../common/config';
-
+import { pingRouter } from './api/routers/ping.router';
+import { collisionsRouter } from './api/routers/collisions.router';
 class App {
   public expressApp: express.Application;
   public port: number;
@@ -29,8 +29,8 @@ class App {
   }
 
   private initRouters(): void {
-    this.expressApp.use(router);
-    this.expressApp.use('/api', router);
+    this.expressApp.use(pingRouter.path, pingRouter.router);
+    this.expressApp.use(collisionsRouter.path, collisionsRouter.router);
   }
 
   private initErrorHandling(): void {
