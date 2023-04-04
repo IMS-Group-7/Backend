@@ -9,13 +9,13 @@ generator client {
 }
 
 model Mower {
-  id                  Int                   @id @default(autoincrement())
-  serialNumber        String                @unique
-  Coordinates         Coordinates[]
-  CollisionAvoidances CollisionAvoidances[]
+  id                  Int                  @id @default(autoincrement())
+  serialNumber        String               @unique
+  Coordinate         Coordinate[]
+  CollisionAvoidance CollisionAvoidance[]
 }
 
-model Coordinates {
+model Coordinate {
   id          Int     @id @default(autoincrement())
   mower       Mower   @relation(fields: [mowerId], references: [id])
   mowerId     Int
@@ -25,7 +25,7 @@ model Coordinates {
   timestamp   String
 }
 
-model CollisionAvoidances {
+model CollisionAvoidance {
   id        Int    @id @default(autoincrement())
   mower     Mower  @relation(fields: [mowerId], references: [id])
   mowerId   Int

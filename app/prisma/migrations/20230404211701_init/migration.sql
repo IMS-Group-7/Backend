@@ -8,7 +8,7 @@ CREATE TABLE `Mower` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Coordinates` (
+CREATE TABLE `Coordinate` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `mowerId` INTEGER NOT NULL,
     `x` INTEGER NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `Coordinates` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `CollisionAvoidances` (
+CREATE TABLE `CollisionAvoidance` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `mowerId` INTEGER NOT NULL,
     `x` INTEGER NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE `CollisionAvoidances` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Coordinates` ADD CONSTRAINT `Coordinates_mowerId_fkey` FOREIGN KEY (`mowerId`) REFERENCES `Mower`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Coordinate` ADD CONSTRAINT `Coordinate_mowerId_fkey` FOREIGN KEY (`mowerId`) REFERENCES `Mower`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CollisionAvoidances` ADD CONSTRAINT `CollisionAvoidances_mowerId_fkey` FOREIGN KEY (`mowerId`) REFERENCES `Mower`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `CollisionAvoidance` ADD CONSTRAINT `CollisionAvoidance_mowerId_fkey` FOREIGN KEY (`mowerId`) REFERENCES `Mower`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
