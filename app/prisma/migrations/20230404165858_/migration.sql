@@ -1,4 +1,13 @@
 -- CreateTable
+CREATE TABLE `Mower` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `serialNumber` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `Mower_serialNumber_key`(`serialNumber`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Coordinates` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `mowerId` INTEGER NOT NULL,

@@ -1,3 +1,4 @@
-import { app } from './presentation_layer/app';
+import Server from './server';
 
-app.listen();
+const server = new Server();
+server.listen();

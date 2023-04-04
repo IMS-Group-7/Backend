@@ -16,10 +16,14 @@ services:
       - 8080:8080
     volumes:
       - ./app:/usr/src/app
+    depends_on:
+      - db
 
   db:
     container_name: Mower-Database
     image: mysql:8
+    expose:
+      - 3306
     ports:
       - 3306:3306
     environment:

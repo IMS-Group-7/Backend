@@ -1,20 +1,24 @@
 import express from 'express';
 import cors from 'cors';
-import { errorMiddleware } from './api/middlewares';
-import { config } from '../common/config';
-import { pingRouter } from './api/routers/ping.router';
-import { collisionsRouter } from './api/routers/collisions.router';
-class App {
+import { config } from './common/config';
+import { prismaConnect, prismaDisconnect } from './data_access_layer/prisma';
+import { errorMiddleware } from './presentation_layer/api/middlewares';
+import { collisionsRouter } from './presentation_layer/api/routers/collisions.router';
+import { pingRouter } from './presentation_layer/api/routers/ping.router';
+
+class Server {
   public expressApp: express.Application;
   public port: number;
 
-  constructor(port: number) {
+  constructor() {
     this.expressApp = express();
-    this.port = port;
+    this.port = config.PORT;
 
+    this.connectDatabase();
     this.initMiddlewares();
     this.initRouters();
     this.initErrorHandling();
+    this.disconnectDatabaseBeforeExit();
   }
 
   private initMiddlewares(): void {
@@ -37,6 +41,16 @@ class App {
     this.expressApp.use(errorMiddleware);
   }
 
+  private async connectDatabase(): Promise<void> {
+    await prismaConnect();
+  }
+
+  private async disconnectDatabaseBeforeExit(): Promise<void> {
+    process.on('beforeExit', async () => {
+      await prismaDisconnect();
+    });
+  }
+
   public listen(): void {
     this.expressApp
       .listen(this.port, () => {
@@ -48,4 +62,4 @@ class App {
   }
 }
 
-export const app = new App(config.PORT);
+export default Server;
