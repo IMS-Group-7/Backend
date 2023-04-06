@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from './common/config';
-import { prismaConnect, prismaDisconnect } from './data_access_layer/prisma';
+import { databaseClient } from './data_access_layer/database-client';
 import { errorMiddleware } from './presentation_layer/api/middlewares';
 import { collisionsRouter } from './presentation_layer/api/routers/collisions.router';
 import { pingRouter } from './presentation_layer/api/routers/ping.router';
@@ -10,9 +10,9 @@ class Server {
   public expressApp: express.Application;
   public port: number;
 
-  constructor() {
+  constructor(port: number) {
     this.expressApp = express();
-    this.port = config.PORT;
+    this.port = port;
 
     this.connectDatabase();
     this.initMiddlewares();
@@ -42,12 +42,12 @@ class Server {
   }
 
   private async connectDatabase(): Promise<void> {
-    await prismaConnect();
+    await databaseClient.$connect();
   }
 
   private async disconnectDatabaseBeforeExit(): Promise<void> {
     process.on('beforeExit', async () => {
-      await prismaDisconnect();
+      await databaseClient.$disconnect();
     });
   }
 
