@@ -5,33 +5,42 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = "linux-musl-arm64-openssl-1.1.x"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
 }
 
 model Mower {
-  id                  Int                  @id @default(autoincrement())
-  serialNumber        String               @unique
-  Coordinate         Coordinate[]
-  CollisionAvoidance CollisionAvoidance[]
+  id            String          @id @default(cuid())
+  serial        String          @unique
+  status        String
+  createdAt     DateTime
+  updatedAt     DateTime
+  mowingSession MowingSession[]
+}
+
+model MowingSession {
+  id         String       @id @default(cuid())
+  mower      Mower        @relation(fields: [mowerId], references: [id])
+  mowerId    String
+  startTime  DateTime
+  endTime    DateTime
+  coordinate Coordinate[]
 }
 
 model Coordinate {
-  id          Int     @id @default(autoincrement())
-  mower       Mower   @relation(fields: [mowerId], references: [id])
-  mowerId     Int
-  x           Int
-  y           Int
-  is_boundary Boolean
-  timestamp   String
+  id              String        @id @default(cuid())
+  mowerSession    MowingSession @relation(fields: [mowingSessionId], references: [id])
+  mowingSessionId String
+  x               Int
+  y               Int
+  isBoundary      Boolean       @default(false)
+  timestamp       DateTime
+  obstacle        Obstacle[]
 }
 
-model CollisionAvoidance {
-  id        Int    @id @default(autoincrement())
-  mower     Mower  @relation(fields: [mowerId], references: [id])
-  mowerId   Int
-  x         Int
-  y         Int
-  imagePath String
-  object    String
-  timestamp String
+model Obstacle {
+  id           String     @id @default(cuid())
+  coordinate   Coordinate @relation(fields: [coordinateId], references: [id])
+  coordinateId String
+  imagePath    String
+  object       String
 }
