@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AbstractRouter from './abstract-router';
 
-class CollisionsRouter extends AbstractRouter {
+export class CollisionsRouter extends AbstractRouter {
   constructor() {
     super('/collisions');
   }
@@ -45,5 +45,3 @@ class CollisionsRouter extends AbstractRouter {
     });
   }
 }
-
-export const collisionsRouter = new CollisionsRouter();
