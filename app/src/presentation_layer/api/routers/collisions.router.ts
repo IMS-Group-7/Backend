@@ -9,23 +9,40 @@ class CollisionsRouter extends AbstractRouter {
   protected initRoutes(): void {
     /**
      * Fetch all collision avoidance events
+     * URL: /collisions/obstacles?sessionId=
      */
-    this.router.get('/objects', (req: Request, res: Response) => {});
+    this.router.get('/obstacles', (req: Request, res: Response) => {
+      const { sessionId } = req.query;
+    });
 
     /**
      * Fetch one collision avoidance event by id
      */
-    this.router.get('/objects/:id', (req: Request, res: Response) => {});
+    this.router.get('/obstacles/:id', (req: Request, res: Response) => {
+      const { id } = req.params;
+    });
 
     /**
      * Send a collision avoidance event
      */
-    this.router.put('/objects', (req: Request, res: Response) => {});
+    this.router.post('/obstacles', (req: Request, res: Response) => {
+      const { sessionId, x, y, file } = req.body;
+    });
 
     /**
      * Fetch all stored boundary coordinates
+     * URL: /collisions/boundaries?serial=
      */
-    this.router.get('/boundaries', (req: Request, res: Response) => {});
+    this.router.get('/boundaries/', (req: Request, res: Response) => {
+      const { serial } = req.query;
+    });
+
+    /**
+     * Mower sends a request when running over the boundary
+     */
+    this.router.post('/boundaries', (req: Request, res: Response) => {
+      const { sessionId, x, y } = req.body;
+    });
   }
 }
 
