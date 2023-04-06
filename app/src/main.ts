@@ -1,3 +1,5 @@
-import { app } from './presentation_layer/app';
+import { config } from './common/config';
+import Server from './server';
 
-app.listen();
+const server = new Server(config.PORT);
+server.listen();
