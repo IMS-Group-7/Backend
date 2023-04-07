@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AbstractRouter from './abstract-router';
 
-class PingRouter extends AbstractRouter {
+export class PingRouter extends AbstractRouter {
   constructor() {
     super('/');
   }
@@ -15,5 +15,3 @@ class PingRouter extends AbstractRouter {
     });
   }
 }
-
-export const pingRouter = new PingRouter();

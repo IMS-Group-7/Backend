@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AbstractRouter from './abstract-router';
 
-class MowersRouter extends AbstractRouter {
+export class MowersRouter extends AbstractRouter {
   constructor() {
     super('/mowers');
   }
@@ -22,5 +22,3 @@ class MowersRouter extends AbstractRouter {
     });
   }
 }
-
-export const mowersRouter = new MowersRouter();

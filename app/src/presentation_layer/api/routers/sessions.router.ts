@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AbstractRouter from './abstract-router';
 
-class SessionsRouter extends AbstractRouter {
+export class SessionsRouter extends AbstractRouter {
   constructor() {
     super('/sessions');
   }
@@ -45,5 +45,3 @@ class SessionsRouter extends AbstractRouter {
     });
   }
 }
-
-export const sessionsRouter = new SessionsRouter();
