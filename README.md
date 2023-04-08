@@ -16,15 +16,21 @@ Install docker: https://www.docker.com/products/docker-desktop/
 
 ### Build the docker containers in development environment
 
-    $ docker-compose up --build
+    $ docker-compose up --build -d
 
 ### Build the docker containers in production environment
 
-    $ docker-compose -f docker-compose.prod.yml up
+    $ docker-compose -f docker-compose.prod.yml up -d
 
 ### Stop all docker containers
 
     $ docker-compose down
+
+### Database migration
+
+After building the container, run the following command to migrate the database:
+
+    $ docker-compose exec backend npx prisma migrate deploy
 
 ## Add Packages
 

@@ -4,12 +4,13 @@ WORKDIR /usr/src/app
 
 COPY ./app/package*.json ./
 
-RUN npm cache clean --force
 RUN npm install
 
 COPY ./app ./
 
-RUN npm install -g typescript && tsc
+RUN npx prisma generate
+
+RUN npm run build
 
 FROM node:16-alpine3.15 as production
 
@@ -22,6 +23,7 @@ COPY ./app/package*.json ./
 COPY ./app/.env ./
 
 RUN npm install --only=production
+RUN npx prisma generate
 
 COPY --from=development /usr/src/app/dist ./dist
 
