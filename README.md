@@ -10,13 +10,13 @@ Install docker: https://www.docker.com/products/docker-desktop/
 
 - Create a `.env` file inside `app` directory with variables matching the `.env.example` file.
 
-- Run the `npm install` command inside the `app` directory before building the docker containers.
+- Run the `npm install` & `npm run build` commands inside the `app` directory before building the docker containers.
 
 - For the `production environment`, the development environment docker container must be built before the production environment container. This is necessary because the production container relies on the compiled output from the development container.
 
 ### Build the docker containers in development environment
 
-    $ docker-compose up --build -d
+    $ docker-compose up --build
 
 ### Build the docker containers in production environment
 
