@@ -5,9 +5,10 @@ import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CollisionsRouter } from './presentation_layer/api/routers/collisions.router';
 
+// instances in BLL and DAL will be resolved and injected automatically by Awilix when required by other components
+
 interface Dependencies {
   databaseClient: PrismaClient;
-  // Routers
   pingRouter: PingRouter;
   mowersRouter: MowersRouter;
   sessionsRouter: SessionsRouter;
