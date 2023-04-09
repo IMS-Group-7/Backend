@@ -7,19 +7,15 @@ export class CollisionsRouter extends AbstractRouter {
   }
 
   protected initRoutes(): void {
-    /**
-     * Fetch all collision avoidance events
-     * URL: /collisions/obstacles?sessionId=
-     */
-    this.router.get('/obstacles', (req: Request, res: Response) => {
-      const { sessionId } = req.query;
-    });
 
     /**
      * Fetch one collision avoidance event by id
      */
     this.router.get('/obstacles/:id', (req: Request, res: Response) => {
       const { id } = req.params;
+      res.status(200).json({
+        sessionId: "1DcaxzcsxSD", x: 1, y: 1, object: "a plant", imagePath: "http://imgur.com/1", timestamp: new Date().toISOString() 
+      })
     });
 
     /**
@@ -27,21 +23,9 @@ export class CollisionsRouter extends AbstractRouter {
      */
     this.router.post('/obstacles', (req: Request, res: Response) => {
       const { sessionId, x, y, file } = req.body;
-    });
-
-    /**
-     * Fetch all stored boundary coordinates
-     * URL: /collisions/boundaries?serial=
-     */
-    this.router.get('/boundaries/', (req: Request, res: Response) => {
-      const { serial } = req.query;
-    });
-
-    /**
-     * Mower sends a request when running over the boundary
-     */
-    this.router.post('/boundaries', (req: Request, res: Response) => {
-      const { sessionId, x, y } = req.body;
+      res.status(200).json({
+        object: "a Cat"
+      })
     });
   }
 }
