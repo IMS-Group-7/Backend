@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
 import AbstractRouter from './abstract-router';
+import { ImageClassificationService } from '../../../data_access_layer/services/image-classification.service';
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' })
+const fs = require('fs');
+
+
 
 export class CollisionsRouter extends AbstractRouter {
   constructor() {
     super('/collisions');
   }
 
-  protected initRoutes(): void {
+  protected async initRoutes(): Promise<void> {
 
     /**
      * Fetch one collision avoidance event by id
@@ -21,11 +27,29 @@ export class CollisionsRouter extends AbstractRouter {
     /**
      * Send a collision avoidance event
      */
-    this.router.post('/obstacles', (req: Request, res: Response) => {
-      const { sessionId, x, y, file } = req.body;
-      res.status(200).json({
-        object: "a Cat"
-      })
+    this.router.post('/obstacles', upload.single('file'), async (req: Request, res: Response) => {
+      // console.log("HEJSAN", req.body);
+      const { sessionId, x, y } = req.body;
+
+      if (!req.file) {
+        res.status(400).send('File not provided');
+        return;
+      }
+
+      const filePath: string = req.file.path
+
+
+      // console.log("BfilePath", filePath);
+
+      try {
+        const base64Image = fs.readFileSync(filePath, 'base64');
+        // console.log("BASEN ", base64Image);
+        const imageClassificationResponse = await new ImageClassificationService().detectLabels(base64Image);
+        res.json(imageClassificationResponse);
+      } catch (error) {
+        // console.error('Error processing image:', error);
+        res.status(500).send('Error processing image');
+      }
     });
   }
 }

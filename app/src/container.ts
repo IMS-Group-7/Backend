@@ -7,6 +7,8 @@ import {
 } from 'awilix';
 import DatabaseClient from './data_access_layer/database-client';
 import { MowerRepository } from './data_access_layer/repositories';
+import { ImageClassificationService } from './data_access_layer/services/image-classification.service';
+
 import { MowerService } from './business_logic_layer/services';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
@@ -21,6 +23,8 @@ container.register({
   // DAL
   databaseClient: asValue(DatabaseClient.getInstance()),
   mowerRepository: asClass<MowerRepository>(MowerRepository).singleton(),
+  imageClassificationService: asClass<ImageClassificationService>(ImageClassificationService).singleton(),
+
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
   // PL
