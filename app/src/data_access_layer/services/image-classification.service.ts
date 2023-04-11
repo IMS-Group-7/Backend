@@ -7,7 +7,6 @@ export class ImageClassificationService {
   private readonly apiEndpoint: string = 'https://vision.googleapis.com/v1/images:annotate';
   
   public async detectLabels(base64Image: string): Promise<any> {
-    // console.log("BASE64: ", base64Image);
     const requestBody = {
       requests: [
         {

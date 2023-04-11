@@ -28,26 +28,21 @@ export class CollisionsRouter extends AbstractRouter {
      * Send a collision avoidance event
      */
     this.router.post('/obstacles', upload.single('file'), async (req: Request, res: Response) => {
-      // console.log("HEJSAN", req.body);
       const { sessionId, x, y } = req.body;
 
       if (!req.file) {
         res.status(400).send('File not provided');
         return;
       }
-
+      
       const filePath: string = req.file.path
-
-
-      // console.log("BfilePath", filePath);
 
       try {
         const base64Image = fs.readFileSync(filePath, 'base64');
-        // console.log("BASEN ", base64Image);
         const imageClassificationResponse = await new ImageClassificationService().detectLabels(base64Image);
         res.json(imageClassificationResponse);
-      } catch (error) {
-        // console.error('Error processing image:', error);
+      } catch (error: unknown) {
+        console.error('Error processing image brother:', (error as any).response.data);
         res.status(500).send('Error processing image');
       }
     });
