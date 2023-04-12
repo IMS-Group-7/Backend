@@ -1,4 +1,10 @@
-import { Coordinate, Obstacle, PrismaClient, Session } from '@prisma/client';
+import {
+  Coordinate,
+  Obstacle,
+  Prisma,
+  PrismaClient,
+  Session,
+} from '@prisma/client';
 import { DatabaseError } from '../errors';
 export { Session };
 
@@ -33,10 +39,10 @@ export class SessionRepository {
    *
    * @param id The ID of the session to be stopped.
    * @param endTime The end time of the session.
-   * @returns The updated session with the end time.
-   * @throws DatabaseError if there is any error during the operation.
+   * @returns The updated session with the end time or null if session with the specified ID does not exist.
+   * @throws DatabaseError if there is any other error during the operation.
    */
-  public async stop(id: string, endTime: Date): Promise<Session> {
+  public async stop(id: string, endTime: Date): Promise<Session | null> {
     try {
       const session: Session = await this.databaseClient.session.update({
         data: {
@@ -49,6 +55,11 @@ export class SessionRepository {
       return session;
     } catch (error: unknown) {
       console.log(error);
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      )
+        return null;
       throw new DatabaseError();
     }
   }
