@@ -7,8 +7,10 @@ import {
 } from 'awilix';
 import DatabaseClient from './data_access_layer/database-client';
 import {
+  BoundaryRepository,
   MowerRepository,
   ObstacleRepository,
+  PositionRepository,
   SessionRepository,
 } from './data_access_layer/repositories';
 import { MowerService } from './business_logic_layer/services';
@@ -28,6 +30,10 @@ container.register({
   sessionRepository: asClass<SessionRepository>(SessionRepository).singleton(),
   obstacleRepository:
     asClass<ObstacleRepository>(ObstacleRepository).singleton(),
+  positionRepository:
+    asClass<PositionRepository>(PositionRepository).singleton(),
+  boundaryRepository:
+    asClass<BoundaryRepository>(BoundaryRepository).singleton(),
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
   // PL
