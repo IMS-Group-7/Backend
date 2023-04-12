@@ -4,7 +4,7 @@ import { CoordinateType } from '../coordinate.type';
 export { Obstacle, Coordinate };
 
 export class ObstacleRepository {
-  private coordinateType: CoordinateType = 'Position';
+  private obstacleCoordinateType: CoordinateType = 'Obstacle';
 
   constructor(private databaseClient: PrismaClient) {}
 
@@ -36,7 +36,7 @@ export class ObstacleRepository {
             x,
             y,
             timestamp,
-            type: this.coordinateType,
+            type: this.obstacleCoordinateType,
           },
         });
 
@@ -77,7 +77,7 @@ export class ObstacleRepository {
           obstacle: true,
         },
         where: {
-          type: this.coordinateType,
+          type: this.obstacleCoordinateType,
           obstacle: {
             id,
           },

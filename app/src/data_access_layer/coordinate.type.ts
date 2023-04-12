@@ -1,1 +1,1 @@
-export type CoordinateType = 'Position' | 'Boundary';
+export type CoordinateType = 'Position' | 'Boundary' | 'Obstacle';
