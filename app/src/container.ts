@@ -8,6 +8,7 @@ import {
 import DatabaseClient from './data_access_layer/database-client';
 import {
   MowerRepository,
+  ObstacleRepository,
   SessionRepository,
 } from './data_access_layer/repositories';
 import { MowerService } from './business_logic_layer/services';
@@ -25,6 +26,8 @@ container.register({
   databaseClient: asValue(DatabaseClient.getInstance()),
   mowerRepository: asClass<MowerRepository>(MowerRepository).singleton(),
   sessionRepository: asClass<SessionRepository>(SessionRepository).singleton(),
+  obstacleRepository:
+    asClass<ObstacleRepository>(ObstacleRepository).singleton(),
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
   // PL
