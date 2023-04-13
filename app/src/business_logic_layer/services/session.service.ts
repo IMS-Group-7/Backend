@@ -26,10 +26,10 @@ export class SessionService {
         `The mower with ID ${mowerId} is already mowing`,
       );
 
-    const timestamp = new Date();
-    const startedSession = this.sessionRepository.startByMowerId(
+    const startTime: Date = new Date();
+    const startedSession = await this.sessionRepository.startByMowerId(
       mowerId,
-      timestamp,
+      startTime,
     );
 
     return startedSession;
@@ -39,20 +39,20 @@ export class SessionService {
     // TODO: input validation
 
     const session = await this.sessionRepository.findById(id);
-    if (!session) throw new NotFoundError();
+    if (!session) throw new NotFoundError(`Session with ID ${id} not found`);
 
     if (session.endTime)
       throw new BadRequestError(
         `The mowing session with ID ${id} has already ended`,
       );
 
-    const endTime = new Date();
-    const stoppedSesston = (await this.sessionRepository.stopById(
+    const endTime: Date = new Date();
+    const stoppedsession = (await this.sessionRepository.stopById(
       id,
       endTime,
     )) as Session;
 
-    return stoppedSesston;
+    return stoppedsession;
   }
 
   public async findAllByMowerId(mowerId: string): Promise<Session[]> {
@@ -81,6 +81,7 @@ export class SessionService {
     if (!session) throw new NotFoundError(`Session with ID ${id} not found`);
 
     // I think its better to let the client filter the coordinate array :)
+    // Add map genereted until the endTime of the session?
     return session;
   }
 }

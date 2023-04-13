@@ -1,12 +1,17 @@
-import { Request, Response } from 'express';
-import AbstractRouter from './abstract-router';
+import { RouterInterface } from '../router.interface';
+import { Request, Response, Router } from 'express';
 
-export class PingRouter extends AbstractRouter {
+export class PingRouter implements RouterInterface {
+  path: string;
+  router: Router;
+
   constructor() {
-    super('/');
+    this.path = '/';
+    this.router = Router();
+    this.initRoutes();
   }
 
-  protected initRoutes(): void {
+  initRoutes(): void {
     /**
      * An endpoint to check the network connection to the backend
      */
