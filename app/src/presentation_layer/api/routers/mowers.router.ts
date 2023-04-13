@@ -34,7 +34,7 @@ export class MowersRouter extends AbstractRouter {
         const { serial } = req.body;
 
         try {
-          const mower = await this.mowerService.create(serial);
+          const mower = await this.mowerService.registerBySerial(serial);
           res.status(201).json(mower).end();
         } catch (error: unknown) {
           next(error);
@@ -42,51 +42,49 @@ export class MowersRouter extends AbstractRouter {
       },
     );
 
-     /**
+    /**
      * Fetch all mowing sessions for a specific mower by its serial number
      */
-     this.router.get(
+    this.router.get(
       '/:serial/sessions',
       async (req: Request, res: Response, next: NextFunction) => {
         const { serial } = req.params;
-        res.status(200).json(
-          [{
-            sessionId: "123abc",
-            mowerSerial: "1zA321",
+        res.status(200).json([
+          {
+            sessionId: '123abc',
+            mowerSerial: '1zA321',
             startTime: new Date().toISOString(),
             endTime: new Date().toISOString(),
           },
           {
-            sessionId: "124abc",
-            mowerSerial: "1zA321",
+            sessionId: '124abc',
+            mowerSerial: '1zA321',
             startTime: new Date().toISOString(),
             endTime: new Date().toISOString(),
           },
           {
-            sessionId: "125abc",
-            mowerSerial: "1zA321",
+            sessionId: '125abc',
+            mowerSerial: '1zA321',
             startTime: new Date().toISOString(),
             endTime: new Date().toISOString(),
-          }]
-        )
+          },
+        ]);
       },
     );
-    
+
     /**
-     * Fetch entire boundaries for all stored mowing sessions 
+     * Fetch entire boundaries for all stored mowing sessions
      * (full map will be generated the more the mower runs)
      */
     this.router.get(
       '/:serial/maps',
       async (req: Request, res: Response, next: NextFunction) => {
         const { serial } = req.params;
-          res.status(200).json(
-            [
-              {x: 10, y: 10}, 
-              {x: 11, y: 11}, 
-              {x: 12, y: 1}
-            ],
-          )
+        res.status(200).json([
+          { x: 10, y: 10 },
+          { x: 11, y: 11 },
+          { x: 12, y: 1 },
+        ]);
       },
     );
   }

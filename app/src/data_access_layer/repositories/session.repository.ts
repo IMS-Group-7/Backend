@@ -6,6 +6,7 @@ import {
   Session,
 } from '@prisma/client';
 import { DatabaseError } from '../errors';
+import { MowerStatus } from '../mower-status.enum';
 export { Session };
 
 export class SessionRepository {
@@ -19,15 +20,34 @@ export class SessionRepository {
    * @returns The created session.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async start(mowerId: string, startTime: Date): Promise<Session> {
+  public async startByMowerId(
+    mowerId: string,
+    startTime: Date,
+  ): Promise<Session> {
     try {
-      const session: Session = await this.databaseClient.session.create({
-        data: {
-          mowerId,
-          startTime,
+      const result: Session = await this.databaseClient.$transaction(
+        async (tx) => {
+          const session: Session = await tx.session.create({
+            data: {
+              mowerId,
+              startTime,
+            },
+          });
+
+          await tx.mower.update({
+            data: {
+              status: MowerStatus.Mowing,
+            },
+            where: {
+              id: mowerId,
+            },
+          });
+
+          return session;
         },
-      });
-      return session;
+      );
+
+      return result;
     } catch (error: unknown) {
       console.log(error);
       throw new DatabaseError();
@@ -42,17 +62,33 @@ export class SessionRepository {
    * @returns The updated session with the end time or null if session with the specified ID does not exist.
    * @throws DatabaseError if there is any other error during the operation.
    */
-  public async stop(id: string, endTime: Date): Promise<Session | null> {
+  public async stopById(id: string, endTime: Date): Promise<Session | null> {
     try {
-      const session: Session = await this.databaseClient.session.update({
-        data: {
-          endTime,
+      const result: Session = await this.databaseClient.$transaction(
+        async (tx) => {
+          const session: Session = await tx.session.update({
+            data: {
+              endTime,
+            },
+            where: {
+              id,
+            },
+          });
+
+          await tx.mower.update({
+            data: {
+              status: MowerStatus.Stopped,
+            },
+            where: {
+              id: session.mowerId,
+            },
+          });
+
+          return session;
         },
-        where: {
-          id,
-        },
-      });
-      return session;
+      );
+
+      return result;
     } catch (error: unknown) {
       console.log(error);
       if (
@@ -65,45 +101,22 @@ export class SessionRepository {
   }
 
   /**
-   * Checks if a given mower has an ongoing session.
+   * Finds a session by its ID.
    *
-   * @param mowerId The ID of the mower.
-   * @returns A boolean indicating whether the mower has an ongoing session.
+   * @param id The ID of the session to be fetched.
+   * @returns The session with the specified ID or null if not found.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async hasOngoingSession(mowerId: string): Promise<boolean> {
+  public async findById(id: string): Promise<Session | null> {
     try {
       const session: Session | null =
-        await this.databaseClient.session.findFirst({
+        await this.databaseClient.session.findUnique({
           where: {
-            mowerId,
-            endTime: null,
+            id,
           },
         });
-
-      return session !== null;
-    } catch (error: unknown) {
-      console.log(error);
-      throw new DatabaseError();
-    }
-  }
-
-  /**
-   * Finds all sessions by a given mower ID.
-   *
-   * @param mowerId The ID of the mower.
-   * @returns An array of sessions associated with the mower.
-   * @throws DatabaseError if there is any error during the operation.
-   */
-  public async findAllByMowerId(mowerId: string): Promise<Session[]> {
-    try {
-      const sessions: Session[] = await this.databaseClient.session.findMany({
-        where: {
-          mowerId,
-        },
-      });
-      return sessions;
-    } catch (error: unknown) {
+      return session;
+    } catch (error) {
       console.log(error);
       throw new DatabaseError();
     }
@@ -116,7 +129,7 @@ export class SessionRepository {
    * @returns The session with its associated coordinates and obstacles.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async findSessionInDetailById(id: string): Promise<
+  public async findOneInDetailById(id: string): Promise<
     | (Session & {
         coordinate: (Coordinate & {
           obstacle: Obstacle | null;
@@ -141,6 +154,27 @@ export class SessionRepository {
         },
       });
       return session;
+    } catch (error: unknown) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
+
+  /**
+   * Finds all sessions by a given mower ID.
+   *
+   * @param mowerId The ID of the mower.
+   * @returns An array of sessions associated with the mower.
+   * @throws DatabaseError if there is any error during the operation.
+   */
+  public async findAllByMowerId(mowerId: string): Promise<Session[]> {
+    try {
+      const sessions: Session[] = await this.databaseClient.session.findMany({
+        where: {
+          mowerId,
+        },
+      });
+      return sessions;
     } catch (error: unknown) {
       console.log(error);
       throw new DatabaseError();

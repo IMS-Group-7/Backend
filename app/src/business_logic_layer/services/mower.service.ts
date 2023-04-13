@@ -1,18 +1,29 @@
 import { NotFoundError } from '../../common/errors';
+import { MowerStatus } from '../../data_access_layer/mower-status.enum';
 import { Mower, MowerRepository } from '../../data_access_layer/repositories';
-import { MowerStatus } from '../mower-status.enum';
 
 export class MowerService {
   constructor(private mowerRepository: MowerRepository) {}
 
-  public async create(serial: string): Promise<Mower> {
-    return this.mowerRepository.create(serial, MowerStatus.Stopped);
+  public async registerBySerial(serial: string): Promise<Mower> {
+    // TODO: input validation
+
+    const registeredMower: Mower = await this.mowerRepository.create(
+      serial,
+      MowerStatus.Stopped,
+    );
+
+    return registeredMower;
   }
 
   public async findBySerial(serial: string): Promise<Mower> {
+    // TODO: input validation
+
     const mower: Mower | null = await this.mowerRepository.findBySerial(serial);
 
-    if (!mower) throw new NotFoundError();
+    if (!mower)
+      throw new NotFoundError(`Mower with serial ${serial} not found`);
+
     return mower;
   }
 }

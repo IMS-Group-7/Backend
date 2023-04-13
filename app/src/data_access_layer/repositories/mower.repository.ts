@@ -56,32 +56,20 @@ export class MowerRepository {
   }
 
   /**
-   * Updates the status of a mower with the specified ID.
+   * Finds a mower by its ID.
    *
-   * @param id The ID of the mower to update.
-   * @param status The new status of the mower.
-   * @returns The updated mower or null if the mower with the specified ID does not exist.
+   * @param id The ID of the mower to be fetched.
+   * @returns The mower with the specified serial number or null if not found.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async updateStatus(id: string, status: string): Promise<Mower | null> {
+  public async findById(id: string): Promise<Mower | null> {
     try {
-      const now = new Date();
-      const mower = await this.databaseClient.mower.update({
+      return this.databaseClient.mower.findUnique({
         where: {
           id,
         },
-        data: {
-          status: status,
-          updatedAt: now,
-        },
       });
-      return mower;
     } catch (error: unknown) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      )
-        return null;
       throw new DatabaseError();
     }
   }

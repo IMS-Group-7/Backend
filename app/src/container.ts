@@ -13,7 +13,7 @@ import {
   PositionRepository,
   SessionRepository,
 } from './data_access_layer/repositories';
-import { MowerService } from './business_logic_layer/services';
+import { MowerService, SessionService } from './business_logic_layer/services';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
@@ -36,6 +36,7 @@ container.register({
     asClass<BoundaryRepository>(BoundaryRepository).singleton(),
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
+  sessionService: asClass<SessionService>(SessionService).singleton(),
   // PL
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),
   mowersRouter: asClass<MowersRouter>(MowersRouter).singleton(),
