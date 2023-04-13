@@ -7,7 +7,7 @@ export class MowersRouter implements RouterInterface {
   router: Router;
 
   constructor(private mowerService: MowerService) {
-    this.path = '/Mowers';
+    this.path = '/mowers';
     this.router = Router();
     this.initRoutes();
   }
