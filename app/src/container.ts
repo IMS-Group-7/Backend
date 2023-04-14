@@ -6,10 +6,12 @@ import {
   InjectionMode,
 } from 'awilix';
 import DatabaseClient from './data_access_layer/database-client';
-import { MowerRepository } from './data_access_layer/repositories';
-import { ImageClassificationService } from './data_access_layer/services/image-classification.service';
-
-import { MowerService } from './business_logic_layer/services';
+import {
+  CoordinateRepository,
+  MowerRepository,
+  SessionRepository,
+} from './data_access_layer/repositories';
+import { MowerService, SessionService } from './business_logic_layer/services';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
@@ -23,10 +25,12 @@ container.register({
   // DAL
   databaseClient: asValue(DatabaseClient.getInstance()),
   mowerRepository: asClass<MowerRepository>(MowerRepository).singleton(),
-  imageClassificationService: asClass<ImageClassificationService>(ImageClassificationService).singleton(),
-
+  sessionRepository: asClass<SessionRepository>(SessionRepository).singleton(),
+  coordinateRepository:
+    asClass<CoordinateRepository>(CoordinateRepository).singleton(),
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
+  sessionService: asClass<SessionService>(SessionService).singleton(),
   // PL
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),
   mowersRouter: asClass<MowersRouter>(MowersRouter).singleton(),
