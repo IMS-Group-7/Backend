@@ -124,15 +124,12 @@ export class CoordinateRepository {
     | null
   > {
     try {
-      return await this.databaseClient.coordinate.findFirst({
+      return await this.databaseClient.coordinate.findUnique({
         include: {
           obstacle: true,
         },
         where: {
-          type: this.obstacleCoordinateType,
-          obstacle: {
-            id,
-          },
+          id,
         },
       });
     } catch (error: unknown) {
