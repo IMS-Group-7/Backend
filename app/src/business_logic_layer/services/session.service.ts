@@ -68,20 +68,14 @@ export class SessionService {
     return sessions;
   }
 
-  public async findOneInDetailById(id: string): Promise<
-    Session & {
-      coordinate: (Coordinate & {
-        obstacle: Obstacle | null;
-      })[];
-    }
-  > {
+  public async findOneInDetailById(id: string) {
     // TODO: input validation
 
-    const session = await this.sessionRepository.findOneInDetailById(id);
+    const session = await this.sessionRepository.findOneWithObstaclesById(id);
     if (!session) throw new NotFoundError(`Session with ID ${id} not found`);
 
-    // I think its better to let the client filter the coordinate array :)
-    // Add map genereted until the endTime of the session?
-    return session;
+    const totalObstacles: number = session.coordinate.length;
+
+    return { ...session, totalObstacles };
   }
 }

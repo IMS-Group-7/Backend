@@ -7,6 +7,8 @@ import {
 } from '@prisma/client';
 import { DatabaseError } from '../errors';
 import { MowerStatus } from '../mower-status.enum';
+import { CoordinateType } from '../coordinate.type';
+import { x } from 'joi';
 export { Session };
 
 export class SessionRepository {
@@ -123,13 +125,13 @@ export class SessionRepository {
   }
 
   /**
-   * Finds a session by its ID and includes its associated coordinates and obstacles.
+   * Finds a session by its ID and includes its obstacles.
    *
    * @param id The ID of the session to be fetched.
    * @returns The session with its associated coordinates and obstacles.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async findOneInDetailById(id: string): Promise<
+  public async findOneWithObstaclesById(id: string): Promise<
     | (Session & {
         coordinate: (Coordinate & {
           obstacle: Obstacle | null;
@@ -144,11 +146,13 @@ export class SessionRepository {
         },
         include: {
           coordinate: {
-            orderBy: {
-              timestamp: 'asc',
-            },
             include: {
               obstacle: true,
+            },
+            where: {
+              obstacle: {
+                isNot: null,
+              },
             },
           },
         },

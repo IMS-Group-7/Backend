@@ -14,10 +14,8 @@ export class SessionsRouter implements RouterInterface {
   }
 
   initRoutes(): void {
-    /**
-     * Mower sends a request when a mowing session begins
-     */
-    this.router.put(
+    // Mower - Start a new mowing session for a given mower ID
+    this.router.post(
       '/start',
       async (req: Request, res: Response, next: NextFunction) => {
         const { mowerId } = req.body;
@@ -33,27 +31,23 @@ export class SessionsRouter implements RouterInterface {
       },
     );
 
-    /**
-     * Mower sends a request when a mowing session ends
-     */
-    this.router.put(
+    // Mower - Stop an ongoing mowing session by its ID
+    this.router.post(
       '/stop',
       async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.body;
         try {
           const stoppedSession = await this.sessionService.stopById(id);
 
-          return res.status(200).json(stoppedSession).end();
+          res.status(200).json(stoppedSession).end();
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    /**
-     * Get all mowing sessions that belong to a specific mower by mower ID
-     * URL: /sessions?mowerId=
-     */
+    // Mobile - Retrieve all mowing sessions for a specific mower by its ID
+    // URL: /sessions?mowerId=
     this.router.get(
       '/',
       async (req: Request, res: Response, next: NextFunction) => {
@@ -69,16 +63,14 @@ export class SessionsRouter implements RouterInterface {
             mowerId,
           );
 
-          return res.status(200).json(mowerSessions).end();
+          res.status(200).json(mowerSessions).end();
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    /**
-     * Get one session by id, including postions, boundaries and obstacles
-     */
+    // Mobile - Get a specific mowing session by its ID
     this.router.get(
       '/:id',
       async (req: Request, res: Response, next: NextFunction) => {
@@ -89,7 +81,7 @@ export class SessionsRouter implements RouterInterface {
             id,
           );
 
-          return res.status(200).json(sessionInDetail).end();
+          res.status(200).json(sessionInDetail).end();
         } catch (error: unknown) {
           next(error);
         }

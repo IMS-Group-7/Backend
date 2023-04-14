@@ -12,9 +12,7 @@ export class PingRouter implements RouterInterface {
   }
 
   initRoutes(): void {
-    /**
-     * An endpoint to check the network connection to the backend
-     */
+    // Endpoint to check the network connection to the backend
     this.router.get('/ping', (_: Request, res: Response) => {
       res.status(200).send('pong').end();
     });

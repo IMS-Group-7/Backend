@@ -13,9 +13,7 @@ export class MowersRouter implements RouterInterface {
   }
 
   initRoutes(): void {
-    /**
-     * Register a mower by its serial number
-     */
+    // Mobile - Register a mower by its serial number
     this.router.post(
       '/',
       async (req: Request, res: Response, next: NextFunction) => {
@@ -30,9 +28,7 @@ export class MowersRouter implements RouterInterface {
       },
     );
 
-    /**
-     * Fetch mower information by serial number
-     */
+    // Mobile / Mower - Retrieve mower information by its serial number
     this.router.get(
       '/:serial',
       async (req: Request, res: Response, next: NextFunction) => {

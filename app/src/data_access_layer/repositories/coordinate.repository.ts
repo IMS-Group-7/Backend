@@ -111,22 +111,22 @@ export class CoordinateRepository {
   }
 
   /**
-   * Finds a coordinate with the associated obstacle, if it exists, by its ID.
+   * Finds an obstacle by its ID and includes the associated coordinate.
    *
    * @param id The ID of the obstacle to be fetched.
-   * @returns The coordinate with the specified ID and associated obstacle, or null if not found.
+   * @returns The obstacle with the specified ID and its associated coordinate, or null if not found.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async findById(id: string): Promise<
-    | (Coordinate & {
-        obstacle: Obstacle | null;
+  public async findObstacleById(id: string): Promise<
+    | (Obstacle & {
+        coordinate: Coordinate;
       })
     | null
   > {
     try {
-      return await this.databaseClient.coordinate.findUnique({
+      return await this.databaseClient.obstacle.findFirst({
         include: {
-          obstacle: true,
+          coordinate: true,
         },
         where: {
           id,
