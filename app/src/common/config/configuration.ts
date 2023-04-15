@@ -6,7 +6,6 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 class Configurations {
   PORT: number = parseInt(process.env.PORT!);
-  MAXIMUM_REQUEST_BODY_SIZE = process.env.MAXIMUM_REQUEST_BODY_SIZE;
 
   private static instance: Configurations | null = null;
 

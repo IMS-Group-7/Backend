@@ -26,7 +26,6 @@ class Server {
     this.expressApp.use(
       express.urlencoded({
         extended: false,
-        limit: config.MAXIMUM_REQUEST_BODY_SIZE,
       }),
     );
     this.expressApp.use(cors({ origin: '*' }));
