@@ -1,11 +1,14 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
+import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() });
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
   router: Router;
 
-  constructor() {
+  constructor(private obstacleService: ObstacleService) {
     this.path = '/coordinates';
     this.router = Router();
     this.initRoutes();
@@ -65,9 +68,25 @@ export class CoordinatesRouter implements RouterInterface {
     // Mower - Create a new obstacle coordinate (collision avoidance event)
     this.router.post(
       '/obstacles',
+      upload.single('image'), // Add multer middleware to handle 'image' file upload
       async (req: Request, res: Response, next: NextFunction) => {
-        const { sessionId, x, y, image } = req.body;
+        console.log(req.body);
         try {
+          console.log(req.body);
+          const { sessionId, x, y } = req.body;
+          const image = req.file; // Access the uploaded image file
+    
+          if (!image) {
+            throw new Error("Image is required");
+          }
+          
+          const imageName: string = image.originalname;
+          // Convert image buffer to base64
+          const base64Image = image.buffer.toString('base64');
+          
+          const classifiedImage = await this.obstacleService.createObstacle(sessionId, Number(x), Number(y), imageName, base64Image);
+          res.status(201).json(classifiedImage);
+    
         } catch (error: unknown) {
           next(error);
         }

@@ -28,3 +28,16 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=mower-db
+
+  migrate:
+    container_name: Mower-Migrate
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+      target: migrate
+    env_file:
+      - ./app/.env
+    command: npx prisma migrate deploy
+    restart: on-failure
+    depends_on:
+      - db

@@ -27,6 +27,7 @@ export class MowerRepository {
       });
       return mower;
     } catch (error: unknown) {
+      console.log(error);
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
@@ -64,12 +65,16 @@ export class MowerRepository {
    */
   public async findById(id: string): Promise<Mower | null> {
     try {
+      if (!id) {
+        return null;
+      }
       return this.databaseClient.mower.findUnique({
         where: {
-          id,
+          id: id,
         },
       });
     } catch (error: unknown) {
+      console.log("error: ", error)
       throw new DatabaseError();
     }
   }

@@ -7,7 +7,8 @@ export class MowerService {
 
   public async registerBySerial(serial: string): Promise<Mower> {
     // TODO: input validation
-
+    console.log("SERIAL IS NOW ",   serial);
+    console.log("SERIAL IS NOW TYPE ",  typeof serial);
     const registeredMower: Mower = await this.mowerRepository.create(
       serial,
       MowerStatus.Stopped,

@@ -49,6 +49,10 @@ class Server {
       this.dependencies.collisionsRouter.path,
       this.dependencies.collisionsRouter.router,
     );
+    this.expressApp.use(
+      this.dependencies.coordinatesRouter.path,
+      this.dependencies.coordinatesRouter.router,
+    );
   }
 
   private initErrorHandling(): void {

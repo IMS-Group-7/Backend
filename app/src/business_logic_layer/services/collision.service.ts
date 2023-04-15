@@ -6,8 +6,8 @@ const fs = require('fs');
 export class CollisionService {
   constructor(private imageClassificationService: ImageClassificationService) {}
 
-  public async detectLabels(filePath: string): Promise<AxiosResponse> {
-    const base64Image: string = fs.readFileSync(filePath, 'base64');
-    return this.imageClassificationService.detectLabels(base64Image);
-  }
+  // public async detectLabels(filePath: string): Promise<AxiosResponse> {
+  //   const base64Image: string = fs.readFileSync(filePath, 'base64');
+  //   // return this.imageClassificationService.detectLabels(base64Image);
+  // }
 }

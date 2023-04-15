@@ -114,7 +114,7 @@ export class SessionRepository {
       const session: Session | null =
         await this.databaseClient.session.findUnique({
           where: {
-            id,
+            id: id,
           },
         });
       return session;

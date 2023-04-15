@@ -38,8 +38,8 @@ export class CollisionsRouter extends AbstractRouter {
       
       try {
         const filePath: string = req.file.path
-        const classifiedImage = await this.collisionService.detectLabels(filePath);
-        res.json(classifiedImage);
+        // const classifiedImage = await this.collisionService.detectLabels(filePath);
+        // res.json(classifiedImage);
       } catch (error: unknown) {
         console.error('Error processing image brother:', (error as any).response.data);
         res.status(500).send('Error processing image');

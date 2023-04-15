@@ -10,3 +10,6 @@ app/.env
 
 # uploads
 app/uploads
+
+#keyfile for google
+app/keyfile.json

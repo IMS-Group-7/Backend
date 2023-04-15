@@ -20,6 +20,8 @@ export class MowersRouter implements RouterInterface {
         const { serial } = req.body;
 
         try {
+          console.log("SERIAL: ", serial)
+          console.log("TYPE OF ", typeof serial);
           const mower = await this.mowerService.registerBySerial(serial);
           res.status(201).json(mower).end();
         } catch (error: unknown) {
