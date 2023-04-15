@@ -11,15 +11,19 @@ import {
   MowerRepository,
   SessionRepository,
 } from './data_access_layer/repositories';
-import { MowerService, SessionService, CollisionService } from './business_logic_layer/services';
-import { ImageClassificationService, FileStorageService, GoogleCloudFileStorageService, LocalFileStorageService } from './data_access_layer/services/';
+import { MowerService, SessionService } from './business_logic_layer/services';
+import {
+  ImageClassificationService,
+  FileStorageService,
+  GoogleCloudFileStorageService,
+  LocalFileStorageService,
+} from './data_access_layer/services/';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CollisionsRouter } from './presentation_layer/api/routers/collisions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
 import { ObstacleService } from './business_logic_layer/services/obstacle.service';
-
 
 const container: AwilixContainer = createContainer({
   injectionMode: InjectionMode.CLASSIC,
@@ -33,13 +37,15 @@ container.register({
   coordinateRepository:
     asClass<CoordinateRepository>(CoordinateRepository).singleton(),
 
-  // DAL SERVICES
-  imageClassificationService: asClass<ImageClassificationService>(ImageClassificationService).singleton(),
-  fileStorageService: asClass<FileStorageService>(GoogleCloudFileStorageService).singleton(),
+  imageClassificationService: asClass<ImageClassificationService>(
+    ImageClassificationService,
+  ).singleton(),
+  fileStorageService: asClass<FileStorageService>(
+    GoogleCloudFileStorageService,
+  ).singleton(),
 
   // BLL
   mowerService: asClass<MowerService>(MowerService).singleton(),
-  collisionService: asClass<CollisionService>(CollisionService).singleton(),
   sessionService: asClass<SessionService>(SessionService).singleton(),
   obstacleService: asClass<ObstacleService>(ObstacleService).singleton(),
 
@@ -49,7 +55,6 @@ container.register({
   sessionsRouter: asClass<SessionsRouter>(SessionsRouter).singleton(),
   collisionsRouter: asClass<CollisionsRouter>(CollisionsRouter).singleton(),
   coordinatesRouter: asClass<CoordinatesRouter>(CoordinatesRouter).singleton(),
-
 });
 
 export default container;
