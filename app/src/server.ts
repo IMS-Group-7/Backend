@@ -45,10 +45,6 @@ class Server {
       this.dependencies.sessionsRouter.router,
     );
     this.expressApp.use(
-      this.dependencies.collisionsRouter.path,
-      this.dependencies.collisionsRouter.router,
-    );
-    this.expressApp.use(
       this.dependencies.coordinatesRouter.path,
       this.dependencies.coordinatesRouter.router,
     );

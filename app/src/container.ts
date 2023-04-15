@@ -21,7 +21,6 @@ import {
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
-import { CollisionsRouter } from './presentation_layer/api/routers/collisions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
 import { ObstacleService } from './business_logic_layer/services/obstacle.service';
 
@@ -53,7 +52,6 @@ container.register({
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),
   mowersRouter: asClass<MowersRouter>(MowersRouter).singleton(),
   sessionsRouter: asClass<SessionsRouter>(SessionsRouter).singleton(),
-  collisionsRouter: asClass<CollisionsRouter>(CollisionsRouter).singleton(),
   coordinatesRouter: asClass<CoordinatesRouter>(CoordinatesRouter).singleton(),
 });
 
