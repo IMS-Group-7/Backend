@@ -2,7 +2,7 @@ import multer from 'multer';
 import { Request } from 'express';
 import { BadRequestError } from '../../../common/errors';
 
-const allowedMimeTypes = ['image/png', 'image/jpeg'];
+const allowedMimeTypes = ['image/png', 'image/jpeg', 'text/plain'];
 
 // Just copied storage type from the router. Dont think this is optimal solution.
 const storage = multer.memoryStorage();
