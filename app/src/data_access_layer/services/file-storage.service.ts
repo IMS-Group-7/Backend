@@ -3,8 +3,7 @@ import { Bucket } from '@google-cloud/storage/build/src/bucket';
 import { Readable } from 'stream';
 const fs = require('fs');
 const path = require('path');
-import { config } from 'dotenv';
-config();
+import { config } from '../../common/config/configuration';
 
 export interface FileStorageService  {
   createFile(fileName: string, base64String: string): Promise<string>;
@@ -17,7 +16,7 @@ export class GoogleCloudFileStorageService implements FileStorageService {
 
   constructor() {
     const storage = new Storage();
-    this.bucket = storage.bucket(process.env.GOOGLE_CLOUD_STORAGE_BUCKET);
+    this.bucket = storage.bucket(config.GOOGLE_CLOUD_STORAGE_BUCKET);
   }
 
   public async createFile(fileName: string, base64String: string): Promise<string> {

@@ -1,14 +1,11 @@
 import { ImageAnnotatorClient } from '@google-cloud/vision';
-import dotenv from 'dotenv';
-
-dotenv.config();
-console.log('DATABASE_URL:', process.env.DATABASE_URL);
+import { config } from '../../common/config/configuration';
 
 export class ImageClassificationService {
   private readonly client: ImageAnnotatorClient;
 
   constructor() {
-    const options = { keyfile: process.env.GOOGLE_APPLICATION_CREDENTIALS }
+    const options = { keyfile: config.GOOGLE_APPLICATION_CREDENTIALS }
     this.client = new ImageAnnotatorClient(options);
   }
 
