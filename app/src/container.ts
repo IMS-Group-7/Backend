@@ -23,6 +23,7 @@ import { MowersRouter } from './presentation_layer/api/routers/mowers.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
 import { ObstacleService } from './business_logic_layer/services/obstacle.service';
+import { SocketServer } from './presentation_layer/socketio/socket-server';
 
 const container: AwilixContainer = createContainer({
   injectionMode: InjectionMode.CLASSIC,
@@ -53,6 +54,7 @@ container.register({
   mowersRouter: asClass<MowersRouter>(MowersRouter).singleton(),
   sessionsRouter: asClass<SessionsRouter>(SessionsRouter).singleton(),
   coordinatesRouter: asClass<CoordinatesRouter>(CoordinatesRouter).singleton(),
+  socketServer: asClass<SocketServer>(SocketServer).singleton(),
 });
 
 export default container;
