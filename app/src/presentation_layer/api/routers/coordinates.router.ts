@@ -31,7 +31,6 @@ export class CoordinatesRouter implements RouterInterface {
     this.router.get(
       '/positions/current',
       async (req: Request, res: Response, next: NextFunction) => {
-        const { mowerId } = req.query;
         try {
         } catch (error: unknown) {
           next(error);

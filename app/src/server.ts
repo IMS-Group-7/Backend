@@ -63,7 +63,6 @@ class Server {
   public listen(): void {
     this.expressApp
       .listen(this.port, () => {
-        console.log("APP STARTEDE");
         console.log(`Listening on port ${this.port}`);
       })
       .on('error', (error) => {

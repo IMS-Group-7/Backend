@@ -19,11 +19,9 @@ export class SessionsRouter implements RouterInterface {
     this.router.get(
       '/',
       async (req: Request, res: Response, next: NextFunction) => {
-          console.log("OKEJ1");
+        
         try {
-     
           const mowerSessions = await this.sessionService.findAll();
-
           res.status(200).json(mowerSessions).end();
         } catch (error: unknown) {
           next(error);
@@ -36,7 +34,6 @@ export class SessionsRouter implements RouterInterface {
       '/:id',
       async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        console.log("OKEJ2");
 
         try {
           const sessionInDetail = await this.sessionService.findOneInDetailById(

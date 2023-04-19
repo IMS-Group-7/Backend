@@ -5,19 +5,8 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
-
-  // binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
+  binaryTargets = ["native", "linux-musl", "linux-musl-arm64-openssl-1.1.x"]
 }
-
-// model Mower {
-//   id        String    @id @default(cuid())
-//   serial    String    @unique
-//   status    String
-//   createdAt DateTime
-//   updatedAt DateTime
-//   session   Session[]
-// }
 
 model Session {
   id         String       @id @default(cuid())
