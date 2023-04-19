@@ -1,30 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import  * as faker  from 'faker';
 import { CoordinateRepository } from './src/data_access_layer/repositories/coordinate.repository';
+import Chance from 'chance';
+import { config } from 'dotenv';
+config();
 
+const chance = new Chance();
 const prisma = new PrismaClient();
 const coordinateRepository = new CoordinateRepository(prisma);
 
-async function createMower() {
-  const newMower = await prisma.mower.create({
-    data: {
-      serial: faker.random.alphaNumeric(10),
-      status: faker.random.arrayElement(['idle', 'active', 'offline']),
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
-    },
-  });
-
-  return newMower;
-}
-
-async function createSession(mowerId: string) {
-  const startTime = faker.date.past();
-  const endTime = faker.date.between(startTime, new Date());
+async function createSession() {
+  const startTime = chance.date({ year: new Date().getFullYear() - 1 });
+  const endTime = chance.date({ min: startTime as Date, max: new Date() });
 
   const newSession = await prisma.session.create({
     data: {
-      mowerId,
       startTime,
       endTime,
     },
@@ -36,28 +25,28 @@ async function createSession(mowerId: string) {
 function generatePath(numOfPoints: number) {
   const path = [];
   for (let i = 0; i < numOfPoints; i++) {
-    const x = faker.random.number({ min: 0, max: 1000 });
-    const y = faker.random.number({ min: 0, max: 1000 });
+    const x = chance.integer({ min: 0, max: 1000 });
+    const y = chance.integer({ min: 0, max: 1000 });
     path.push({ x, y });
   }
   return path;
 }
 
 async function createCoordinates(sessionId: string) {
-  const numOfPoints = faker.random.number({ min: 50, max: 150 });
+  const numOfPoints = chance.integer({ min: 50, max: 150 });
   const path = generatePath(numOfPoints);
 
   for (let i = 0; i < path.length; i++) {
     const { x, y } = path[i];
-    const timestamp = faker.date.recent();
+    const timestamp = new Date(chance.date({ year: new Date().getFullYear() }));
 
     // Create Position coordinate
     await coordinateRepository.createPosition(sessionId, x, y, timestamp);
 
     // Simulate collision avoidance event by inserting Obstacle coordinate
-    if (faker.random.number({ min: 1, max: 100 }) <= 10) {
-      const imagePath = `images/${faker.system.fileName()}`;
-      const object = faker.random.word();
+    if (chance.integer({ min: 1, max: 100 }) <= 10) {
+      const imagePath = `images/${chance.hash({ length: 10 })}`;
+      const object = chance.word();
       await coordinateRepository.createObstacle(
         sessionId,
         x,
@@ -89,15 +78,12 @@ async function createCoordinates(sessionId: string) {
 }
 
 async function main() {
-  const numOfMowers = 10;
-  const numOfSessionsPerMower = 5;
+  const numOfSessions = 10;
 
-  for (let i = 0; i < numOfMowers; i++) {
-    const mower = await createMower();
-
-    for (let j = 0; j < numOfSessionsPerMower; j++) {
-      const session = await createSession(mower.id);
-      await createCoordinates(session.id);
-    }
+  for (let j = 0; j < numOfSessions; j++) {
+    const session = await createSession();
+    await createCoordinates(session.id);
   }
 }
+
+main();

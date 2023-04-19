@@ -22,32 +22,36 @@ export class SessionRepository {
    * @returns The created session.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async startByMowerId(
-    mowerId: string,
+  public async start(
     startTime: Date,
   ): Promise<Session> {
     try {
-      const result: Session = await this.databaseClient.$transaction(
-        async (tx) => {
-          const session: Session = await tx.session.create({
-            data: {
-              mowerId,
-              startTime,
-            },
-          });
 
-          await tx.mower.update({
-            data: {
-              status: MowerStatus.Mowing,
-            },
-            where: {
-              id: mowerId,
-            },
-          });
-
-          return session;
+      const result: Session = await this.databaseClient.session.create({
+        data: {
+          startTime,
         },
-      );
+      });
+      // const result: Session = await this.databaseClient.$transaction(
+      //   async (tx) => {
+      //     const session: Session = await tx.session.create({
+      //       data: {
+      //         startTime,
+      //       },
+      //     });
+
+      //     await tx.mower.update({
+      //       data: {
+      //         status: MowerStatus.Mowing,
+      //       },
+      //       where: {
+      //         id: mowerId,
+      //       },
+      //     });
+
+      //     return session;
+      //   },
+      // );
 
       return result;
     } catch (error: unknown) {
@@ -64,33 +68,26 @@ export class SessionRepository {
    * @returns The updated session with the end time or null if session with the specified ID does not exist.
    * @throws DatabaseError if there is any other error during the operation.
    */
-  public async stopById(id: string, endTime: Date): Promise<Session | null> {
+  public async stop(endTime: Date): Promise<Session | null> {
     try {
-      const result: Session = await this.databaseClient.$transaction(
-        async (tx) => {
-          const session: Session = await tx.session.update({
-            data: {
-              endTime,
-            },
-            where: {
-              id,
-            },
-          });
-
-          await tx.mower.update({
-            data: {
-              status: MowerStatus.Stopped,
-            },
-            where: {
-              id: session.mowerId,
-            },
-          });
-
-          return session;
+      const sessionToUpdate: Session | null = await this.databaseClient.session.findFirst({
+        where: {
+          endTime: null,
         },
-      );
+      });
 
-      return result;
+      if (!sessionToUpdate) throw new DatabaseError("Session doesn't exist");
+
+      const updatedSession: Session = await this.databaseClient.session.update({
+        data: {
+          endTime: endTime,
+        },
+        where: {
+          id: sessionToUpdate.id,
+        },
+      });
+
+      return updatedSession;
     } catch (error: unknown) {
       console.log(error);
       if (
@@ -109,15 +106,27 @@ export class SessionRepository {
    * @returns The session with the specified ID or null if not found.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async findById(id: string): Promise<Session | null> {
+  public async findActiveMower(): Promise<Session | null> {
     try {
       const session: Session | null =
-        await this.databaseClient.session.findUnique({
+        await this.databaseClient.session.findFirst({
           where: {
-            id: id,
+            endTime: null,
           },
         });
       return session;
+    } catch (error) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
+
+  public async findAll(): Promise<Session[]> {
+    try {
+      const sessions: Session[] = await this.databaseClient.session.findMany();
+      if (!sessions) throw new DatabaseError("Sessions don't exist");
+
+      return sessions;
     } catch (error) {
       console.log(error);
       throw new DatabaseError();
@@ -158,27 +167,6 @@ export class SessionRepository {
         },
       });
       return session;
-    } catch (error: unknown) {
-      console.log(error);
-      throw new DatabaseError();
-    }
-  }
-
-  /**
-   * Finds all sessions by a given mower ID.
-   *
-   * @param mowerId The ID of the mower.
-   * @returns An array of sessions associated with the mower.
-   * @throws DatabaseError if there is any error during the operation.
-   */
-  public async findAllByMowerId(mowerId: string): Promise<Session[]> {
-    try {
-      const sessions: Session[] = await this.databaseClient.session.findMany({
-        where: {
-          mowerId,
-        },
-      });
-      return sessions;
     } catch (error: unknown) {
       console.log(error);
       throw new DatabaseError();

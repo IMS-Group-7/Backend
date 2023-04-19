@@ -10,19 +10,17 @@ generator client {
   // binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
 }
 
-model Mower {
-  id        String    @id @default(cuid())
-  serial    String    @unique
-  status    String
-  createdAt DateTime
-  updatedAt DateTime
-  session   Session[]
-}
+// model Mower {
+//   id        String    @id @default(cuid())
+//   serial    String    @unique
+//   status    String
+//   createdAt DateTime
+//   updatedAt DateTime
+//   session   Session[]
+// }
 
 model Session {
   id         String       @id @default(cuid())
-  mower      Mower        @relation(fields: [mowerId], references: [id])
-  mowerId    String
   startTime  DateTime
   endTime    DateTime?
   coordinate Coordinate[]

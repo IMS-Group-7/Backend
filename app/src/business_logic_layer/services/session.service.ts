@@ -2,8 +2,6 @@ import { BadRequestError, NotFoundError } from '../../common/errors';
 import { MowerStatus } from '../../data_access_layer/mower-status.enum';
 import {
   Coordinate,
-  Mower,
-  MowerRepository,
   Obstacle,
   Session,
   SessionRepository,
@@ -12,59 +10,48 @@ import {
 export class SessionService {
   constructor(
     private sessionRepository: SessionRepository,
-    private mowerRepository: MowerRepository,
   ) {}
 
-  public async startByMowerId(mowerId: string): Promise<Session> {
+  public async start(): Promise<Session> {
     // TODO: input validation
 
-    const mower: Mower | null = await this.mowerRepository.findById(mowerId);
-    if (!mower) throw new NotFoundError(`Mower with ID ${mowerId} not found`);
+    const activeSession = await this.sessionRepository.findActiveMower();
+    if (activeSession) throw new NotFoundError(`The session is already active`);
 
-    if (mower.status === MowerStatus.Mowing)
-      throw new BadRequestError(
-        `The mower with ID ${mowerId} is already mowing`,
-      );
+    // if (mower.status === MowerStatus.Mowing)
+    //   throw new BadRequestError(
+    //     `The mower with ID ${mowerId} is already mowing`,
+    //   );
 
     const startTime: Date = new Date();
-    const startedSession = await this.sessionRepository.startByMowerId(
-      mowerId,
-      startTime,
+    const startedSession = await this.sessionRepository.start(
+      startTime
     );
 
     return startedSession;
   }
 
-  public async stopById(id: string): Promise<Session> {
+  public async stop(): Promise<Session> {
     // TODO: input validation
 
-    const session = await this.sessionRepository.findById(id);
-    if (!session) throw new NotFoundError(`Session with ID ${id} not found`);
+    const session = await this.sessionRepository.findActiveMower();
+    if (!session) throw new NotFoundError(`There are no sessions running`);
 
-    if (session.endTime)
-      throw new BadRequestError(
-        `The mowing session with ID ${id} has already ended`,
-      );
+    // if (session.endTime)
+    //   throw new BadRequestError(
+    //     `The mowing session with ID ${id} has already ended`,
+    //   );
 
     const endTime: Date = new Date();
-    const stoppedsession = (await this.sessionRepository.stopById(
-      id,
+    const stoppedSession = (await this.sessionRepository.stop(
       endTime,
     )) as Session;
 
-    return stoppedsession;
+    return stoppedSession;
   }
 
-  public async findAllByMowerId(mowerId: string): Promise<Session[]> {
-    // TODO: input validation
-
-    const mower: Mower | null = await this.mowerRepository.findById(mowerId);
-    if (!mower) throw new NotFoundError(`Mower with ID ${mowerId} not found`);
-
-    const sessions: Session[] = await this.sessionRepository.findAllByMowerId(
-      mowerId,
-    );
-
+  public async findAll(): Promise<Session[]> {
+    const sessions: Session[] = await this.sessionRepository.findAll();
     return sessions;
   }
 

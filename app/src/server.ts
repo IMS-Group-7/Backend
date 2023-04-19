@@ -37,10 +37,6 @@ class Server {
       this.dependencies.pingRouter.router,
     );
     this.expressApp.use(
-      this.dependencies.mowersRouter.path,
-      this.dependencies.mowersRouter.router,
-    );
-    this.expressApp.use(
       this.dependencies.sessionsRouter.path,
       this.dependencies.sessionsRouter.router,
     );
@@ -67,6 +63,7 @@ class Server {
   public listen(): void {
     this.expressApp
       .listen(this.port, () => {
+        console.log("APP STARTEDE");
         console.log(`Listening on port ${this.port}`);
       })
       .on('error', (error) => {
