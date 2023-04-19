@@ -1,12 +1,19 @@
-interface RegisterMowerEvent {
-  type: 'register_mower';
+export enum EventType {
+  REGISTER_MOWER = 'register_mower',
+  POSITION_UPDATE = 'position_update',
+  DRIVING_MODE = 'driving_mode',
+  MOWER_COMMAND = 'mower_command',
+}
+
+export interface RegisterMowerEvent {
+  type: EventType.REGISTER_MOWER;
   data: {
     role: 'mower';
   };
 }
 
-interface PositionUpdateEvent {
-  type: 'position_update';
+export interface PositionUpdateEvent {
+  type: EventType.POSITION_UPDATE;
   data: {
     x: number;
     y: number;
@@ -14,24 +21,24 @@ interface PositionUpdateEvent {
   };
 }
 
-interface DrivingModeEvent {
-  type: 'driving_mode';
+export interface DrivingModeEvent {
+  type: EventType.DRIVING_MODE;
   data: {
     mode: 'manual' | 'auto';
   };
 }
 
-enum MowerControlDirection {
+enum MowerCommandDirection {
   FORWARD = 'forward',
   BACKWARD = 'backward',
   LEFT = 'left',
   RIGHT = 'right',
 }
 
-interface MowerCommandEvent {
-  type: 'mower_control';
+export interface MowerCommandEvent {
+  type: EventType.MOWER_COMMAND;
   data: {
-    direction: MowerControlDirection;
+    direction: MowerCommandDirection;
   };
 }
 
@@ -48,13 +55,13 @@ export function isValidSocketEvent(event: any): event is SocketEvent {
   }
 
   switch (event.type) {
-    case 'register_mower':
+    case EventType.REGISTER_MOWER:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
         event.data.role === 'mower'
       );
-    case 'position_update':
+    case EventType.POSITION_UPDATE:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
@@ -62,18 +69,18 @@ export function isValidSocketEvent(event: any): event is SocketEvent {
         'y' in event.data &&
         'sessionId' in event.data
       );
-    case 'driving_mode':
+    case EventType.DRIVING_MODE:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
         (event.data.mode === 'manual' || event.data.mode === 'auto')
       );
-    case 'mower_control':
+    case EventType.MOWER_COMMAND:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
         'direction' in event.data &&
-        Object.values(MowerControlDirection).includes(event.data.direction)
+        Object.values(MowerCommandDirection).includes(event.data.direction)
       );
     default:
       return false;
