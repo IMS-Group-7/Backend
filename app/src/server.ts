@@ -3,21 +3,21 @@ import cors from 'cors';
 import { errorMiddleware } from './presentation_layer/api/middlewares';
 import { Dependencies } from './dependencies';
 import { Server as HttpServer, createServer } from 'http';
-import { Server as SocketIOServer } from 'socket.io';
 
 class Server {
   public port: number;
   private readonly dependencies: Dependencies;
   private expressApp: express.Application;
   private server: HttpServer;
-  public socketIOServer: SocketIOServer;
 
   constructor(port: number, dependencies: Dependencies) {
     this.port = port;
     this.dependencies = dependencies;
     this.expressApp = express();
     this.server = createServer(this.expressApp);
-    this.socketIOServer = this.dependencies.socketServer.init(this.server);
+
+    // initialize socketIO server
+    this.dependencies.socketServer.init(this.server);
 
     this.connectDatabase();
     this.initMiddlewares();
