@@ -1,19 +1,19 @@
 export enum EventType {
-  REGISTER_MOWER = 'register_mower',
-  POSITION_UPDATE = 'position_update',
-  DRIVING_MODE = 'driving_mode',
-  MOWER_COMMAND = 'mower_command',
+  MOWER_REGISTRATION = 'MOWER_REGISTRATION',
+  MOWER_COMMAND = 'MOWER_COMMAND',
+  MOWER_POSITION = 'MOWER_POSITION',
+  DRIVING_MODE = 'DRIVING_MODE',
 }
 
-export interface RegisterMowerEvent {
-  type: EventType.REGISTER_MOWER;
+export interface MowerRegistrationEvent {
+  type: EventType.MOWER_REGISTRATION;
   data: {
     role: 'mower';
   };
 }
 
 export interface PositionUpdateEvent {
-  type: EventType.POSITION_UPDATE;
+  type: EventType.MOWER_POSITION;
   data: {
     x: number;
     y: number;
@@ -43,7 +43,7 @@ export interface MowerCommandEvent {
 }
 
 export type SocketEvent =
-  | RegisterMowerEvent
+  | MowerRegistrationEvent
   | PositionUpdateEvent
   | DrivingModeEvent
   | MowerCommandEvent;
@@ -55,13 +55,13 @@ export function isValidSocketEvent(event: any): event is SocketEvent {
   }
 
   switch (event.type) {
-    case EventType.REGISTER_MOWER:
+    case EventType.MOWER_REGISTRATION:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
         event.data.role === 'mower'
       );
-    case EventType.POSITION_UPDATE:
+    case EventType.MOWER_POSITION:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
