@@ -19,10 +19,10 @@ export class SessionsRouter implements RouterInterface {
     this.router.get(
       '/',
       async (req: Request, res: Response, next: NextFunction) => {
-        
         try {
           const mowerSessions = await this.sessionService.findAll();
           res.status(200).json(mowerSessions).end();
+
         } catch (error: unknown) {
           next(error);
         }
@@ -34,13 +34,12 @@ export class SessionsRouter implements RouterInterface {
       '/:id',
       async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-
         try {
           const sessionInDetail = await this.sessionService.findOneInDetailById(
             id,
           );
-
           res.status(200).json(sessionInDetail).end();
+
         } catch (error: unknown) {
           next(error);
         }
@@ -67,8 +66,8 @@ export class SessionsRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const stoppedSession = await this.sessionService.stop();
-
           res.status(200).json(stoppedSession).end();
+          
         } catch (error: unknown) {
           next(error);
         }

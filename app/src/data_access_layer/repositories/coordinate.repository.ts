@@ -137,6 +137,51 @@ export class CoordinateRepository {
       throw new DatabaseError();
     }
   }
+  
+  public async getCurrentPosition(): Promise<Coordinate | null> {
+    try {
+      return await this.databaseClient.coordinate.findFirst({
+        where: {
+          type: this.positionCoordinateType,
+        },
+        orderBy: {
+          timestamp: 'desc',
+        },
+      });
+    } catch (error: unknown) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
+
+  public async findAllBoundariesBySessionId(sessionId: string): Promise<Coordinate[]> 
+  {
+    try {
+      return await this.databaseClient.coordinate.findMany({
+        where: {
+          sessionId,
+          type: this.boundaryCoordinateType,
+        },
+      });
+    } catch (error: unknown) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
+
+  public async findAllBoundaries(): Promise<Coordinate[]>
+  {
+    try {
+      return await this.databaseClient.coordinate.findMany({
+        where: {
+          type: this.boundaryCoordinateType,
+        },
+      });
+    } catch (error: unknown) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
 
   /**
    * A private helper method to create a coordinate with a specific type.

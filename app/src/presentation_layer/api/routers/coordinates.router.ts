@@ -1,13 +1,15 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
-import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';
+import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';''
 import multerMiddleware from '../middlewares/multer.middleware';
+import { CoordinateService } from '../../../business_logic_layer/services/coordinate.service';
+import { Obstacle } from '../../../data_access_layer/repositories';
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
   router: Router;
 
-  constructor(private obstacleService: ObstacleService) {
+  constructor(private obstacleService: ObstacleService, private coordinateService: CoordinateService) {
     this.path = '/coordinates';
     this.router = Router();
     this.initRoutes();
@@ -15,23 +17,28 @@ export class CoordinatesRouter implements RouterInterface {
 
   initRoutes(): void {
     // Mower - Create a new position coordinate
+    // URL: /coordinates/positions
     this.router.post(
       '/positions',
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
+          const createdCoordinate = this.coordinateService.createCoordinate(sessionId, x, y)
+          res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    // Mobile - Get the current position of the mower by its mower ID
-    // URL: /coordinates/positions/current?mowerId=
+    // Mobile - Get the current position of the mower
+    // URL: /coordinates/positions/current
     this.router.get(
       '/positions/current',
       async (req: Request, res: Response, next: NextFunction) => {
         try {
+          const currentCoordinate = this.coordinateService.getCurrentPosition();
+          res.status(200).json(currentCoordinate).end();
         } catch (error: unknown) {
           next(error);
         }
@@ -39,24 +46,29 @@ export class CoordinatesRouter implements RouterInterface {
     );
 
     // Mower - Create a new boundary coordinate
+    // URL: /coordinates/boundaries
     this.router.post(
       '/boundaries',
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
+          const createdCoordinate = this.coordinateService.createCoordinate(sessionId, x, y)
+          res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    // Mobile - Fetch all boundary coordinates associated with a given mower
-    // URL: /coordinates/boundaries?mowerId=
+    // Mobile - Fetch all boundary coordinates
+    // URL: /coordinates/boundaries
     this.router.get(
       '/boundaries',
       async (req: Request, res: Response, next: NextFunction) => {
-        const { mowerId } = req.query;
         try {
+          const coordinates = await this.coordinateService.findAllBoundaries();
+          res.status(200).json(coordinates).end();
+
         } catch (error: unknown) {
           next(error);
         }
@@ -64,13 +76,12 @@ export class CoordinatesRouter implements RouterInterface {
     );
 
     // Mower - Create a new obstacle coordinate (collision avoidance event)
+    // URL: /coordinates/obstacles
     this.router.post(
       '/obstacles',
       multerMiddleware.single('image'),
       async (req: Request, res: Response, next: NextFunction) => {
-        console.log(req.body);
         try {
-          console.log(req.body);
           const { sessionId, x, y } = req.body;
           const image = req.file; // Access the uploaded image file
 
@@ -97,11 +108,15 @@ export class CoordinatesRouter implements RouterInterface {
     );
 
     // Mobile - Fetch a specific obstacle coordinate by its obstacle ID
+    // URL: /coordinates/obstacles/:obstacleId
     this.router.get(
       '/obstacles/:obstacleId',
       async (req: Request, res: Response, next: NextFunction) => {
         const { obstacleId } = req.params;
         try {
+          const obstacle: Obstacle = await this.obstacleService.findObstacleById(obstacleId);
+          res.status(200).json(obstacle);
+
         } catch (error: unknown) {
           next(error);
         }
