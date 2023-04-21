@@ -11,6 +11,7 @@ import {
   isValidSocketEvent,
 } from './event.interfaces';
 
+
 type Client = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
 export class SocketServer {
@@ -26,7 +27,7 @@ export class SocketServer {
    */
   public init(server: HttpServer): void {
     this.io = new SocketIOServer(server);
-
+  
     this.io.on('connection', (client: Client) => {
       this.events(client);
       this.onMowerDisconnet(client);
@@ -57,6 +58,7 @@ export class SocketServer {
         client.broadcast.emit('message', JSON.stringify(eventData));
         return;
       }
+      
 
       if (eventData.type === EventType.DRIVING_MODE) {
         if (this.mowerId)

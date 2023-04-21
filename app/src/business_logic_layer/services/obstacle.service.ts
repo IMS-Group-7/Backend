@@ -1,4 +1,4 @@
-import { CoordinateRepository } from "../../data_access_layer/repositories";
+import { Coordinate, CoordinateRepository, Obstacle } from "../../data_access_layer/repositories";
 import { ImageClassificationService, FileStorageService } from "../../data_access_layer/services";
 
 export class ObstacleService {
@@ -22,6 +22,21 @@ export class ObstacleService {
                 throw err;
             }
         }
+
+        public async findObstacleById(id: string): Promise<(Obstacle & { coordinate: Coordinate })> {
+            try {
+              const obstacle: (Obstacle & { coordinate: Coordinate }) | null = await this.coordinateRepository.findObstacleById(id);
+                if (obstacle === null) {
+                    throw new Error("Obstacle not found");
+                }
+
+              return obstacle;
+          
+            } catch (err) {
+              console.error(err);
+              throw err;
+            }
+          }
 }
 
 
