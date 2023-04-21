@@ -10,6 +10,10 @@ import {
   SocketEvent,
   isValidSocketEvent,
 } from './event.interfaces';
+import { SessionService } from '../../business_logic_layer/services';
+import { CoordinateService } from '../../business_logic_layer/services/coordinate.service';
+import { ObstacleService } from '../../business_logic_layer/services/obstacle.service';
+import { Coordinate } from '../../data_access_layer/repositories/coordinate.repository';
 
 type Client = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
@@ -17,7 +21,7 @@ export class SocketServer {
   private io!: SocketIOServer;
   private mowerId?: string;
 
-  constructor() {}
+  constructor(private sessionService: SessionService, private obstacleService: ObstacleService, private coordinateService:) {}
 
   /**
    * Initializes the Socket.IO server.
@@ -26,7 +30,7 @@ export class SocketServer {
    */
   public init(server: HttpServer): void {
     this.io = new SocketIOServer(server);
-
+  
     this.io.on('connection', (client: Client) => {
       this.events(client);
       this.onMowerDisconnet(client);
@@ -57,6 +61,7 @@ export class SocketServer {
         client.broadcast.emit('message', JSON.stringify(eventData));
         return;
       }
+      
 
       if (eventData.type === EventType.DRIVING_MODE) {
         if (this.mowerId)

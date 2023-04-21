@@ -21,11 +21,8 @@ import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
 import { ObstacleService } from './business_logic_layer/services/obstacle.service';
-<<<<<<< HEAD
 import { CoordinateService } from './business_logic_layer/services/coordinate.service';
-=======
 import { SocketServer } from './presentation_layer/socketio/socket-server';
->>>>>>> 03cdc5002072092ff1a4a8b1154b5af04667ebe4
 
 const container: AwilixContainer = createContainer({
   injectionMode: InjectionMode.CLASSIC,
