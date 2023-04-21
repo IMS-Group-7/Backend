@@ -1,18 +1,23 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './common/config';
 import { errorMiddleware } from './presentation_layer/api/middlewares';
 import { Dependencies } from './dependencies';
+import { Server as HttpServer, createServer } from 'http';
 
 class Server {
-  private readonly dependencies: Dependencies;
-  public expressApp: express.Application;
   public port: number;
+  private readonly dependencies: Dependencies;
+  private expressApp: express.Application;
+  private server: HttpServer;
 
   constructor(port: number, dependencies: Dependencies) {
-    this.expressApp = express();
     this.port = port;
     this.dependencies = dependencies;
+    this.expressApp = express();
+    this.server = createServer(this.expressApp);
+
+    // initialize socketIO server
+    this.dependencies.socketServer.init(this.server);
 
     this.connectDatabase();
     this.initMiddlewares();
@@ -61,7 +66,7 @@ class Server {
   }
 
   public listen(): void {
-    this.expressApp
+    this.server
       .listen(this.port, () => {
         console.log(`Listening on port ${this.port}`);
       })
