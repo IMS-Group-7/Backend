@@ -5,7 +5,9 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
+  binaryTargets = ["native", "linux-musl"]
+
+  // binaryTargets = ["native", "linux-musl-arm64-openssl-1.1.x"]
 }
 
 model Mower {
@@ -22,25 +24,25 @@ model Session {
   mower      Mower        @relation(fields: [mowerId], references: [id])
   mowerId    String
   startTime  DateTime
-  endTime    DateTime
+  endTime    DateTime?
   coordinate Coordinate[]
 }
 
 model Coordinate {
-  id         String     @id @default(cuid())
-  session    Session    @relation(fields: [sessionId], references: [id])
-  sessionId  String
-  x          Int
-  y          Int
-  isBoundary Boolean    @default(false)
-  timestamp  DateTime
-  obstacle   Obstacle[]
+  id        String    @id @default(cuid())
+  session   Session   @relation(fields: [sessionId], references: [id])
+  sessionId String
+  x         Int
+  y         Int
+  type      String
+  timestamp DateTime
+  obstacle  Obstacle?
 }
 
 model Obstacle {
   id           String     @id @default(cuid())
   coordinate   Coordinate @relation(fields: [coordinateId], references: [id])
-  coordinateId String
+  coordinateId String     @unique
   imagePath    String
   object       String
 }

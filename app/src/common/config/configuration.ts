@@ -6,7 +6,10 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') });
 
 class Configurations {
   PORT: number = parseInt(process.env.PORT!);
-  MAXIMUM_REQUEST_BODY_SIZE = process.env.MAXIMUM_REQUEST_BODY_SIZE;
+  DATABASE_URL = process.env.DATABASE_URL;
+  GOOGLE_VISION_API_KEY = process.env.GOOGLE_VISION_API_KEY;
+  GOOGLE_CLOUD_STORAGE_BUCKET = process.env.GOOGLE_CLOUD_STORAGE_BUCKET;
+  GOOGLE_APPLICATION_CREDENTIALS = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
   private static instance: Configurations | null = null;
 

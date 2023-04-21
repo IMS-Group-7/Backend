@@ -1,18 +1,23 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './common/config';
 import { errorMiddleware } from './presentation_layer/api/middlewares';
 import { Dependencies } from './dependencies';
+import { Server as HttpServer, createServer } from 'http';
 
 class Server {
-  private readonly dependencies: Dependencies;
-  public expressApp: express.Application;
   public port: number;
+  private readonly dependencies: Dependencies;
+  private expressApp: express.Application;
+  private server: HttpServer;
 
   constructor(port: number, dependencies: Dependencies) {
-    this.expressApp = express();
     this.port = port;
     this.dependencies = dependencies;
+    this.expressApp = express();
+    this.server = createServer(this.expressApp);
+
+    // initialize socketIO server
+    this.dependencies.socketServer.init(this.server);
 
     this.connectDatabase();
     this.initMiddlewares();
@@ -26,7 +31,6 @@ class Server {
     this.expressApp.use(
       express.urlencoded({
         extended: false,
-        limit: config.MAXIMUM_REQUEST_BODY_SIZE,
       }),
     );
     this.expressApp.use(cors({ origin: '*' }));
@@ -46,8 +50,8 @@ class Server {
       this.dependencies.sessionsRouter.router,
     );
     this.expressApp.use(
-      this.dependencies.collisionsRouter.path,
-      this.dependencies.collisionsRouter.router,
+      this.dependencies.coordinatesRouter.path,
+      this.dependencies.coordinatesRouter.router,
     );
   }
 
@@ -66,7 +70,7 @@ class Server {
   }
 
   public listen(): void {
-    this.expressApp
+    this.server
       .listen(this.port, () => {
         console.log(`Listening on port ${this.port}`);
       })

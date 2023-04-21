@@ -28,3 +28,12 @@ RUN npx prisma generate
 COPY --from=development /usr/src/app/dist ./dist
 
 CMD ["node", "dist/main.js"]
+
+# Prisma migrate build
+FROM node:16-alpine3.15 as migrate
+WORKDIR /usr/src/app
+COPY ./app/package*.json ./
+RUN npm install
+COPY ./app ./
+COPY --from=development /usr/src/app/node_modules/prisma /usr/src/app/node_modules/prisma
+COPY --from=development /usr/src/app/node_modules/@prisma /usr/src/app/node_modules/@prisma
