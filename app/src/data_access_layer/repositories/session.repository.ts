@@ -124,8 +124,7 @@ export class SessionRepository {
   public async findAll(): Promise<Session[]> {
     try {
       const sessions: Session[] = await this.databaseClient.session.findMany();
-      if (!sessions) throw new DatabaseError("Sessions don't exist");
-
+      
       return sessions;
     } catch (error) {
       console.log(error);

@@ -10,10 +10,7 @@ import {
   SocketEvent,
   isValidSocketEvent,
 } from './event.interfaces';
-import { SessionService } from '../../business_logic_layer/services';
-import { CoordinateService } from '../../business_logic_layer/services/coordinate.service';
-import { ObstacleService } from '../../business_logic_layer/services/obstacle.service';
-import { Coordinate } from '../../data_access_layer/repositories/coordinate.repository';
+
 
 type Client = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
@@ -21,7 +18,7 @@ export class SocketServer {
   private io!: SocketIOServer;
   private mowerId?: string;
 
-  constructor(private sessionService: SessionService, private obstacleService: ObstacleService, private coordinateService:) {}
+  constructor() {}
 
   /**
    * Initializes the Socket.IO server.
