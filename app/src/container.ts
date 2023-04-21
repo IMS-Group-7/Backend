@@ -21,6 +21,7 @@ import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
 import { ObstacleService } from './business_logic_layer/services/obstacle.service';
+import { CoordinateService } from './business_logic_layer/services/coordinate.service';
 
 const container: AwilixContainer = createContainer({
   injectionMode: InjectionMode.CLASSIC,
@@ -43,6 +44,7 @@ container.register({
   // BLL
   sessionService: asClass<SessionService>(SessionService).singleton(),
   obstacleService: asClass<ObstacleService>(ObstacleService).singleton(),
+  coordinateService: asClass<CoordinateService>(CoordinateService).singleton(),
 
   // PL
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),
