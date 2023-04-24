@@ -14,12 +14,12 @@ export class SessionsRouter implements RouterInterface {
 
   initRoutes(): void {
     // Mobile - Retrieve all mowing sessions
-    // URL: /sessions
     this.router.get(
       '/',
-      async (req: Request, res: Response, next: NextFunction) => {
+      async (_: Request, res: Response, next: NextFunction) => {
         try {
           const mowerSessions = await this.sessionService.findAll();
+
           res.status(200).json(mowerSessions).end();
         } catch (error: unknown) {
           next(error);
@@ -33,10 +33,10 @@ export class SessionsRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
         try {
-          const sessionInDetail = await this.sessionService.findOneInDetailById(
-            id,
-          );
-          res.status(200).json(sessionInDetail).end();
+          const sessionWithObstacles =
+            await this.sessionService.findOneWithObstaclesById(id);
+
+          res.status(200).json(sessionWithObstacles).end();
         } catch (error: unknown) {
           next(error);
         }
@@ -49,6 +49,7 @@ export class SessionsRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const startedSession = await this.sessionService.start();
+
           res.status(201).json(startedSession).end();
         } catch (error: unknown) {
           next(error);
@@ -62,6 +63,7 @@ export class SessionsRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const stoppedSession = await this.sessionService.stop();
+
           res.status(200).json(stoppedSession).end();
         } catch (error: unknown) {
           next(error);

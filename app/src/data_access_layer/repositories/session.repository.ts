@@ -2,6 +2,14 @@ import { Coordinate, Obstacle, PrismaClient, Session } from '@prisma/client';
 import { DatabaseError } from '../errors';
 export { Session };
 
+export type SessionWithObstacles =
+  | (Session & {
+      coordinate: (Coordinate & {
+        obstacle: Obstacle | null;
+      })[];
+    })
+  | null;
+
 export class SessionRepository {
   constructor(private databaseClient: PrismaClient) {}
 
@@ -88,20 +96,37 @@ export class SessionRepository {
   }
 
   /**
+   * Retrieves a session by ID
+   *
+   * @param {string} id - The ID of the session to be fetched.
+   * @returns {Promise<Session | null>} A session object, or null if no session is found.
+   * @throws {DatabaseError} If there's an error during the retrieval process.
+   */
+  public async findById(id: string): Promise<Session | null> {
+    try {
+      const session: Session | null =
+        await this.databaseClient.session.findUnique({
+          where: {
+            id,
+          },
+        });
+      return session;
+    } catch (error) {
+      console.log(error);
+      throw new DatabaseError();
+    }
+  }
+
+  /**
    * Finds a session by its ID and includes its obstacles.
    *
-   * @param id The ID of the session to be fetched.
+   * @param {string} id - The ID of the session to be fetched.
    * @returns The session with its associated coordinates and obstacles.
    * @throws DatabaseError if there is any error during the operation.
    */
-  public async findOneWithObstaclesById(id: string): Promise<
-    | (Session & {
-        coordinate: (Coordinate & {
-          obstacle: Obstacle | null;
-        })[];
-      })
-    | null
-  > {
+  public async findOneWithObstaclesById(
+    id: string,
+  ): Promise<SessionWithObstacles> {
     try {
       const session = await this.databaseClient.session.findUnique({
         where: {
@@ -116,6 +141,9 @@ export class SessionRepository {
               obstacle: {
                 isNot: null,
               },
+            },
+            orderBy: {
+              timestamp: 'desc',
             },
           },
         },
