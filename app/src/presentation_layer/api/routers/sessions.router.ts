@@ -1,7 +1,6 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
 import { SessionService } from '../../../business_logic_layer/services';
-import { BadRequestError } from '../../../common/errors';
 
 export class SessionsRouter implements RouterInterface {
   path: string;
@@ -22,7 +21,6 @@ export class SessionsRouter implements RouterInterface {
         try {
           const mowerSessions = await this.sessionService.findAll();
           res.status(200).json(mowerSessions).end();
-
         } catch (error: unknown) {
           next(error);
         }
@@ -39,7 +37,6 @@ export class SessionsRouter implements RouterInterface {
             id,
           );
           res.status(200).json(sessionInDetail).end();
-
         } catch (error: unknown) {
           next(error);
         }
@@ -53,7 +50,6 @@ export class SessionsRouter implements RouterInterface {
         try {
           const startedSession = await this.sessionService.start();
           res.status(201).json(startedSession).end();
-
         } catch (error: unknown) {
           next(error);
         }
@@ -67,13 +63,10 @@ export class SessionsRouter implements RouterInterface {
         try {
           const stoppedSession = await this.sessionService.stop();
           res.status(200).json(stoppedSession).end();
-          
         } catch (error: unknown) {
           next(error);
         }
       },
     );
-
-   
   }
 }

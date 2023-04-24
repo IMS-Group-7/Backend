@@ -1,15 +1,20 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
-import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';''
+import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';
+('');
 import multerMiddleware from '../middlewares/multer.middleware';
 import { CoordinateService } from '../../../business_logic_layer/services/coordinate.service';
 import { Obstacle } from '../../../data_access_layer/repositories';
+import { BadRequestError } from '../../../common/errors';
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
   router: Router;
 
-  constructor(private obstacleService: ObstacleService, private coordinateService: CoordinateService) {
+  constructor(
+    private obstacleService: ObstacleService,
+    private coordinateService: CoordinateService,
+  ) {
     this.path = '/coordinates';
     this.router = Router();
     this.initRoutes();
@@ -23,7 +28,11 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.coordinateService.createCoordinate(sessionId, x, y)
+          const createdCoordinate = this.coordinateService.createCoordinate(
+            sessionId,
+            x,
+            y,
+          );
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -52,7 +61,11 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.coordinateService.createCoordinate(sessionId, x, y)
+          const createdCoordinate = this.coordinateService.createCoordinate(
+            sessionId,
+            x,
+            y,
+          );
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -68,7 +81,6 @@ export class CoordinatesRouter implements RouterInterface {
         try {
           const coordinates = await this.coordinateService.findAllBoundaries();
           res.status(200).json(coordinates).end();
-
         } catch (error: unknown) {
           next(error);
         }
@@ -83,24 +95,19 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const { sessionId, x, y } = req.body;
-          const image = req.file; // Access the uploaded image file
+          const fileBuffer = req.file?.buffer;
 
-          if (!image) {
-            throw new Error('Image is required');
-          }
-
-          const imageName: string = image.originalname;
-          // Convert image buffer to base64
-          const base64Image = image.buffer.toString('base64');
+          if (!fileBuffer)
+            throw new BadRequestError("Field 'image' is required");
 
           const classifiedImage = await this.obstacleService.createObstacle(
             sessionId,
             Number(x),
             Number(y),
-            imageName,
-            base64Image,
+            fileBuffer,
           );
-          res.status(201).json(classifiedImage);
+
+          res.status(201).json(classifiedImage).end();
         } catch (error: unknown) {
           next(error);
         }
@@ -114,9 +121,9 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { obstacleId } = req.params;
         try {
-          const obstacle: Obstacle = await this.obstacleService.findObstacleById(obstacleId);
+          const obstacle: Obstacle =
+            await this.obstacleService.findObstacleById(obstacleId);
           res.status(200).json(obstacle);
-
         } catch (error: unknown) {
           next(error);
         }

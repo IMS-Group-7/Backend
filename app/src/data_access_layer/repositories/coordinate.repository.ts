@@ -11,14 +11,14 @@ export class CoordinateRepository {
   constructor(private databaseClient: PrismaClient) {}
 
   /**
-   * Creates a position coordinate
+   * Creates a position coordinate in the database.
    *
-   * @param sessionId The ID of the session associated with the position.
-   * @param x The x coordinate of the position.
-   * @param y The y coordinate of the position.
-   * @param timestamp The timestamp of when the position was recorded.
-   * @returns The created position coordinate.
-   * @throws DatabaseError if there is any error during the operation.
+   * @param {string} sessionId - The ID of the session associated with the position.
+   * @param {number} x - The x coordinate of the position.
+   * @param {number} y - The y coordinate of the position.
+   * @param {Date} timestamp - The timestamp of when the position was recorded.
+   * @returns {Promise<Coordinate>} - A promise that resolves with the created position coordinate.
+   * @throws {DatabaseError} - If there's an error during the creation process.
    */
   public async createPosition(
     sessionId: string,
@@ -26,24 +26,24 @@ export class CoordinateRepository {
     y: number,
     timestamp: Date,
   ): Promise<Coordinate> {
-    return await this.createCoordinate(
+    return this.createCoordinate({
       sessionId,
       x,
       y,
       timestamp,
-      this.positionCoordinateType,
-    );
+      type: this.positionCoordinateType,
+    });
   }
 
   /**
    * Creates a boundary coordinate
    *
-   * @param sessionId The ID of the session associated with the boundary.
-   * @param x The x coordinate of the boundary.
-   * @param y The y coordinate of the boundary.
-   * @param timestamp The timestamp of when the boundary was recorded.
-   * @returns The created boundary coordinate.
-   * @throws DatabaseError if there is any error during the operation.
+   * @param {string} sessionId - The ID of the session associated with the boundary.
+   * @param {number} x - The x coordinate of the boundary.
+   * @param {number} y - The y coordinate of the boundary.
+   * @param {Date} timestamp - The timestamp of when the boundary was recorded.
+   * @returns {Promise<Coordinate>} - A promise that resolves with the created boundary coordinate.
+   * @throws {DatabaseError} - If there's an error during the creation process.
    */
   public async createBoundary(
     sessionId: string,
@@ -51,26 +51,26 @@ export class CoordinateRepository {
     y: number,
     timestamp: Date,
   ): Promise<Coordinate> {
-    return await this.createCoordinate(
+    return this.createCoordinate({
       sessionId,
       x,
       y,
       timestamp,
-      this.boundaryCoordinateType,
-    );
+      type: this.boundaryCoordinateType,
+    });
   }
 
   /**
-   * Creates a new obstacle coordinate (collision avoidance event)
+   * Creates an obstacle coordinate with an associated collision avoidance event in the database.
    *
-   * @param sessionId The ID of the session associated with the obstacle.
-   * @param x The x coordinate of the obstacle.
-   * @param y The y coordinate of the obstacle.
-   * @param timestamp The timestamp of when the obstacle was recorded.
-   * @param imagePath The file path of the image representing the obstacle.
-   * @param object A description of the object that represents the obstacle.
-   * @returns The created obstacle with its associated coordinate.
-   * @throws DatabaseError if there is any error during the operation.
+   * @param {string} sessionId - The ID of the session associated with the obstacle.
+   * @param {number} x - The x coordinate of the obstacle.
+   * @param {number} y - The y coordinate of the obstacle.
+   * @param {Date} timestamp - The timestamp of when the obstacle was recorded.
+   * @param {string} imagePath - The file path of the image representing the obstacle.
+   * @param {string} object - A description of the object that represents the obstacle.
+   * @returns {Promise<Coordinate & { obstacle: Obstacle }>} - A promise that resolves with the created obstacle and its associated coordinate.
+   * @throws {DatabaseError} - If there's an error during the creation process.
    */
   public async createObstacle(
     sessionId: string,
@@ -137,7 +137,7 @@ export class CoordinateRepository {
       throw new DatabaseError();
     }
   }
-  
+
   public async getCurrentPosition(): Promise<Coordinate | null> {
     try {
       return await this.databaseClient.coordinate.findFirst({
@@ -154,10 +154,11 @@ export class CoordinateRepository {
     }
   }
 
-  public async findAllBoundariesBySessionId(sessionId: string): Promise<Coordinate[]> 
-  {
+  public async findAllBoundariesBySessionId(
+    sessionId: string,
+  ): Promise<Coordinate[]> {
     try {
-      return await this.databaseClient.coordinate.findMany({
+      return this.databaseClient.coordinate.findMany({
         where: {
           sessionId,
           type: this.boundaryCoordinateType,
@@ -169,10 +170,9 @@ export class CoordinateRepository {
     }
   }
 
-  public async findAllBoundaries(): Promise<Coordinate[]>
-  {
+  public async findAllBoundaries(): Promise<Coordinate[]> {
     try {
-      return await this.databaseClient.coordinate.findMany({
+      return this.databaseClient.coordinate.findMany({
         where: {
           type: this.boundaryCoordinateType,
         },
@@ -184,33 +184,19 @@ export class CoordinateRepository {
   }
 
   /**
-   * A private helper method to create a coordinate with a specific type.
+   * A private helper method to create a coordinate in the database.
    *
-   * @param sessionId The ID of the session associated with the coordinate.
-   * @param x The x coordinate of the coordinate.
-   * @param y The y coordinate of the coordinate.
-   * @param timestamp The timestamp of when the coordinate was recorded.
-   * @param type The type of the coordinate (Position, Boundary, or Obstacle).
-   * @returns The created coordinate.
-   * @throws DatabaseError if there is any error during the operation.
+   * @param {Omit<Coordinate, 'id'>} coordinateData - The coordinate data without the ID, including session ID, x, y, timestamp, and type.
+   * @returns {Promise<Coordinate>} - A promise that resolves with the created coordinate.
+   * @throws {DatabaseError} - If there's an error during the creation process.
    */
   private async createCoordinate(
-    sessionId: string,
-    x: number,
-    y: number,
-    timestamp: Date,
-    type: CoordinateType,
+    coordinateData: Omit<Coordinate, 'id'>,
   ): Promise<Coordinate> {
     try {
       const coordinate: Coordinate =
         await this.databaseClient.coordinate.create({
-          data: {
-            sessionId,
-            x,
-            y,
-            timestamp,
-            type,
-          },
+          data: coordinateData,
         });
       return coordinate;
     } catch (error: unknown) {
