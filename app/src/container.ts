@@ -16,8 +16,9 @@ import {
 } from './data_access_layer/services';
 import {
   SessionService,
+  BoundaryService,
   ObstacleService,
-  CoordinateService,
+  PositionService,
 } from './business_logic_layer/services';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
@@ -44,8 +45,9 @@ container.register({
 
   // BLL
   sessionService: asClass<SessionService>(SessionService).singleton(),
+  boundaryService: asClass<BoundaryService>(BoundaryService).singleton(),
   obstacleService: asClass<ObstacleService>(ObstacleService).singleton(),
-  coordinateService: asClass<CoordinateService>(CoordinateService).singleton(),
+  positionService: asClass<PositionService>(PositionService).singleton(),
 
   // PL
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),

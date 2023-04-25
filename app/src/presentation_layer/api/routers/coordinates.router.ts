@@ -1,19 +1,21 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
-import { ObstacleService } from '../../../business_logic_layer/services/obstacle.service';
-('');
 import multerMiddleware from '../middlewares/multer.middleware';
-import { CoordinateService } from '../../../business_logic_layer/services/coordinate.service';
-import { Obstacle } from '../../../data_access_layer/repositories';
 import { BadRequestError } from '../../../common/errors';
+import {
+  BoundaryService,
+  ObstacleService,
+  PositionService,
+} from '../../../business_logic_layer/services';
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
   router: Router;
 
   constructor(
+    private boundaryService: BoundaryService,
     private obstacleService: ObstacleService,
-    private coordinateService: CoordinateService,
+    private positionService: PositionService,
   ) {
     this.path = '/coordinates';
     this.router = Router();
@@ -21,18 +23,13 @@ export class CoordinatesRouter implements RouterInterface {
   }
 
   initRoutes(): void {
-    // Mower - Create a new position coordinate
-    // URL: /coordinates/positions
+    // Mower - Add a new position coordinate
     this.router.post(
       '/positions',
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.coordinateService.createCoordinate(
-            sessionId,
-            x,
-            y,
-          );
+          const createdCoordinate = this.positionService.add(sessionId, x, y);
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -40,32 +37,13 @@ export class CoordinatesRouter implements RouterInterface {
       },
     );
 
-    // Mobile - Get the current position of the mower
-    // URL: /coordinates/positions/current
-    this.router.get(
-      '/positions/current',
-      async (req: Request, res: Response, next: NextFunction) => {
-        try {
-          const currentCoordinate = this.coordinateService.getCurrentPosition();
-          res.status(200).json(currentCoordinate).end();
-        } catch (error: unknown) {
-          next(error);
-        }
-      },
-    );
-
-    // Mower - Create a new boundary coordinate
-    // URL: /coordinates/boundaries
+    // Mower - Add a new boundary coordinate
     this.router.post(
       '/boundaries',
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.coordinateService.createCoordinate(
-            sessionId,
-            x,
-            y,
-          );
+          const createdCoordinate = this.boundaryService.add(sessionId, x, y);
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -73,13 +51,12 @@ export class CoordinatesRouter implements RouterInterface {
       },
     );
 
-    // Mobile - Fetch all boundary coordinates
-    // URL: /coordinates/boundaries
+    // Mobile - Fetch all boundary coordinates (with no repetition)
     this.router.get(
       '/boundaries',
       async (req: Request, res: Response, next: NextFunction) => {
         try {
-          const coordinates = await this.coordinateService.findAllBoundaries();
+          const coordinates = await this.boundaryService.findAllDistinct();
           res.status(200).json(coordinates).end();
         } catch (error: unknown) {
           next(error);
@@ -87,8 +64,7 @@ export class CoordinatesRouter implements RouterInterface {
       },
     );
 
-    // Mower - Create a new obstacle coordinate (collision avoidance event)
-    // URL: /coordinates/obstacles
+    // Mower - Add a new obstacle coordinate (collision avoidance event)
     this.router.post(
       '/obstacles',
       multerMiddleware.single('image'),
@@ -100,7 +76,7 @@ export class CoordinatesRouter implements RouterInterface {
           if (!fileBuffer)
             throw new BadRequestError("Field 'image' is required");
 
-          const classifiedImage = await this.obstacleService.createObstacle(
+          const classifiedImage = await this.obstacleService.add(
             sessionId,
             Number(x),
             Number(y),
@@ -115,14 +91,12 @@ export class CoordinatesRouter implements RouterInterface {
     );
 
     // Mobile - Fetch a specific obstacle coordinate by its obstacle ID
-    // URL: /coordinates/obstacles/:obstacleId
     this.router.get(
       '/obstacles/:obstacleId',
       async (req: Request, res: Response, next: NextFunction) => {
         const { obstacleId } = req.params;
         try {
-          const obstacle: Obstacle =
-            await this.obstacleService.findObstacleById(obstacleId);
+          const obstacle = await this.obstacleService.findById(obstacleId);
           res.status(200).json(obstacle);
         } catch (error: unknown) {
           next(error);
