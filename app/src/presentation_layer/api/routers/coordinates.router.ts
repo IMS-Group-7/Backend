@@ -51,6 +51,21 @@ export class CoordinatesRouter implements RouterInterface {
       },
     );
 
+    // Mobile - Fetch travled path of the current active session
+    this.router.get(
+      '/active-session-path',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const activeSessionPath =
+            await this.positionService.findCurrentActiveSessionTravelledPath();
+
+          res.status(200).json(activeSessionPath).end();
+        } catch (error: unknown) {
+          next(error);
+        }
+      },
+    );
+
     // Mobile - Fetch all boundary coordinates (with no repetition)
     this.router.get(
       '/boundaries',
