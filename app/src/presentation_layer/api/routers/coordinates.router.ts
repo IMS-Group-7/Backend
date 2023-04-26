@@ -76,7 +76,7 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const activeSessionPath =
-            await this.positionService.findCurrentActiveSessionTravelledPath();
+            await this.positionService.findCurrentActiveSessionTraveledPath();
           res.status(200).json(activeSessionPath).end();
         } catch (error: unknown) {
           next(error);
@@ -104,7 +104,6 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const fileBuffer: Buffer | undefined = req.file?.buffer;
         const { sessionId, x, y } = req.body;
-        console.log(typeof x);
         try {
           if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
             throw new BadRequestError(

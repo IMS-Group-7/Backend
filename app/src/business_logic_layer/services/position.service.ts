@@ -36,11 +36,11 @@ export class PositionService {
   }
 
   /**
-   * Finds the travelled path of the current active session.
-   * @returns {Promise<{x: number; y: number; type: string;}[]>} The array of objects representing the travelled path, sorted by timestamp in ascending order.
+   * Finds the traveled path of the current active session.
+   * @returns {Promise<{x: number; y: number; type: string;}[]>} The array of objects representing the traveled path, sorted by timestamp in ascending order.
    * @throws {NotFoundError} If no active mowing session exists.
    */
-  public async findCurrentActiveSessionTravelledPath(): Promise<
+  public async findCurrentActiveSessionTraveledPath(): Promise<
     { x: number; y: number; type: string }[]
   > {
     const activeSession: Session | null =
@@ -48,8 +48,8 @@ export class PositionService {
 
     if (!activeSession) throw new NotFoundError('No active mowing session.');
 
-    // Travelled path (Position & Obstacles) for current session, in ascending order.
-    const travelledPath = await this.coordinateRepository.findAllWithFilter({
+    // Traveled path (Position & Obstacles) for current session, in ascending order.
+    const path = await this.coordinateRepository.findAllWithFilter({
       where: {
         AND: [
           { sessionId: activeSession.id },
@@ -71,8 +71,6 @@ export class PositionService {
       },
     });
 
-    return travelledPath as unknown as Promise<
-      { x: number; y: number; type: string }[]
-    >;
+    return path as unknown as Promise<{ x: number; y: number; type: string }[]>;
   }
 }
