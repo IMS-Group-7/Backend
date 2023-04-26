@@ -7,6 +7,7 @@ import {
   ObstacleService,
   PositionService,
 } from '../../../business_logic_layer/services';
+import { isNumber, isString } from '../helpers';
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
@@ -29,7 +30,16 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.positionService.add(sessionId, x, y);
+          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+            throw new BadRequestError(
+              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
+            );
+
+          const createdCoordinate = await this.positionService.add(
+            sessionId,
+            Number(x),
+            Number(y),
+          );
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -43,7 +53,16 @@ export class CoordinatesRouter implements RouterInterface {
       async (req: Request, res: Response, next: NextFunction) => {
         const { sessionId, x, y } = req.body;
         try {
-          const createdCoordinate = this.boundaryService.add(sessionId, x, y);
+          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+            throw new BadRequestError(
+              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
+            );
+
+          const createdCoordinate = await this.boundaryService.add(
+            sessionId,
+            Number(x),
+            Number(y),
+          );
           res.status(201).json(createdCoordinate).end();
         } catch (error: unknown) {
           next(error);
@@ -58,7 +77,6 @@ export class CoordinatesRouter implements RouterInterface {
         try {
           const activeSessionPath =
             await this.positionService.findCurrentActiveSessionTravelledPath();
-
           res.status(200).json(activeSessionPath).end();
         } catch (error: unknown) {
           next(error);
@@ -84,12 +102,19 @@ export class CoordinatesRouter implements RouterInterface {
       '/obstacles',
       multerMiddleware.single('image'),
       async (req: Request, res: Response, next: NextFunction) => {
+        const fileBuffer: Buffer | undefined = req.file?.buffer;
+        const { sessionId, x, y } = req.body;
+        console.log(typeof x);
         try {
-          const { sessionId, x, y } = req.body;
-          const fileBuffer = req.file?.buffer;
+          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+            throw new BadRequestError(
+              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
+            );
 
           if (!fileBuffer)
-            throw new BadRequestError("Field 'image' is required");
+            throw new BadRequestError(
+              "Invalid input format: 'image' is required.",
+            );
 
           const classifiedImage = await this.obstacleService.add(
             sessionId,
@@ -97,7 +122,6 @@ export class CoordinatesRouter implements RouterInterface {
             Number(y),
             fileBuffer,
           );
-
           res.status(201).json(classifiedImage).end();
         } catch (error: unknown) {
           next(error);
@@ -109,9 +133,9 @@ export class CoordinatesRouter implements RouterInterface {
     this.router.get(
       '/obstacles/:obstacleId',
       async (req: Request, res: Response, next: NextFunction) => {
-        const { obstacleId } = req.params;
+        const { obstacleId: id } = req.params;
         try {
-          const obstacle = await this.obstacleService.findById(obstacleId);
+          const obstacle = await this.obstacleService.findById(id);
           res.status(200).json(obstacle);
         } catch (error: unknown) {
           next(error);
