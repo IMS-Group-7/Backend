@@ -4,7 +4,6 @@ import { BadRequestError } from '../../../common/errors';
 
 const allowedMimeTypes = ['image/png', 'image/jpeg', 'text/plain'];
 
-// Just copied storage type from the router. Dont think this is optimal solution.
 const storage = multer.memoryStorage();
 
 const fileFilter = (_: Request, file: Express.Multer.File, cb: Function) => {

@@ -41,19 +41,19 @@ async function createCoordinates(sessionId: string) {
     const timestamp = new Date(chance.date({ year: new Date().getFullYear() }));
 
     // Create Position coordinate
-    await coordinateRepository.createPosition(sessionId, x, y, timestamp);
+    await coordinateRepository.addPosition(sessionId, x, y, timestamp);
 
     // Simulate collision avoidance event by inserting Obstacle coordinate
     if (chance.integer({ min: 1, max: 100 }) <= 10) {
       const imagePath = `images/${chance.hash({ length: 10 })}`;
       const object = chance.word();
-      await coordinateRepository.createObstacle(
+      await coordinateRepository.addObstacle(
         sessionId,
         x,
         y,
         timestamp,
         imagePath,
-        object
+        object,
       );
     }
 
@@ -67,11 +67,11 @@ async function createCoordinates(sessionId: string) {
     ];
 
     for (const boundary of boundaryCoordinates) {
-      await coordinateRepository.createBoundary(
+      await coordinateRepository.addBoundary(
         sessionId,
         boundary.x,
         boundary.y,
-        timestamp
+        timestamp,
       );
     }
   }

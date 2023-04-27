@@ -10,8 +10,6 @@ COPY ./app ./
 
 RUN npx prisma generate
 
-CMD ["npm", "run", "start:dev"]
-
 FROM node:16-alpine3.15 as production
 
 ARG NODE_ENV=production
@@ -27,4 +25,4 @@ RUN npx prisma generate
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]

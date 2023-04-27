@@ -1,7 +1,6 @@
 import { RouterInterface } from '../router.interface';
 import { NextFunction, Request, Response, Router } from 'express';
 import { SessionService } from '../../../business_logic_layer/services';
-import { BadRequestError } from '../../../common/errors';
 
 export class SessionsRouter implements RouterInterface {
   path: string;
@@ -15,14 +14,13 @@ export class SessionsRouter implements RouterInterface {
 
   initRoutes(): void {
     // Mobile - Retrieve all mowing sessions
-    // URL: /sessions
     this.router.get(
       '/',
-      async (req: Request, res: Response, next: NextFunction) => {
+      async (_: Request, res: Response, next: NextFunction) => {
         try {
           const mowerSessions = await this.sessionService.findAll();
-          res.status(200).json(mowerSessions).end();
 
+          res.status(200).json(mowerSessions).end();
         } catch (error: unknown) {
           next(error);
         }
@@ -34,46 +32,41 @@ export class SessionsRouter implements RouterInterface {
       '/:id',
       async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
-        try {
-          const sessionInDetail = await this.sessionService.findOneInDetailById(
-            id,
-          );
-          res.status(200).json(sessionInDetail).end();
 
+        try {
+          const sessionWithObstacles =
+            await this.sessionService.findOneWithObstaclesById(id);
+          res.status(200).json(sessionWithObstacles).end();
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    // Mower - Start a new mowing session for a given mower ID
+    // Mower - Start a new mowing session
     this.router.post(
       '/start',
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const startedSession = await this.sessionService.start();
           res.status(201).json(startedSession).end();
-
         } catch (error: unknown) {
           next(error);
         }
       },
     );
 
-    // Mower - Stop an ongoing mowing session by its ID
+    // Mower - Stop an ongoing mowing session
     this.router.post(
       '/stop',
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           const stoppedSession = await this.sessionService.stop();
           res.status(200).json(stoppedSession).end();
-          
         } catch (error: unknown) {
           next(error);
         }
       },
     );
-
-   
   }
 }

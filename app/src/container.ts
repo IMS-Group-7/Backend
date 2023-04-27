@@ -10,18 +10,19 @@ import {
   CoordinateRepository,
   SessionRepository,
 } from './data_access_layer/repositories';
-import { SessionService } from './business_logic_layer/services';
 import {
   ImageClassificationService,
-  FileStorageService,
-  GoogleCloudFileStorageService,
-  LocalFileStorageService,
-} from './data_access_layer/services/';
+  GoogleCloudStorageService,
+} from './data_access_layer/services';
+import {
+  SessionService,
+  BoundaryService,
+  ObstacleService,
+  PositionService,
+} from './business_logic_layer/services';
 import { PingRouter } from './presentation_layer/api/routers/ping.router';
 import { SessionsRouter } from './presentation_layer/api/routers/sessions.router';
 import { CoordinatesRouter } from './presentation_layer/api/routers/coordinates.router';
-import { ObstacleService } from './business_logic_layer/services/obstacle.service';
-import { CoordinateService } from './business_logic_layer/services/coordinate.service';
 import { SocketServer } from './presentation_layer/socketio/socket-server';
 
 const container: AwilixContainer = createContainer({
@@ -38,14 +39,15 @@ container.register({
   imageClassificationService: asClass<ImageClassificationService>(
     ImageClassificationService,
   ).singleton(),
-  fileStorageService: asClass<FileStorageService>(
-    GoogleCloudFileStorageService,
+  fileStorageService: asClass<GoogleCloudStorageService>(
+    GoogleCloudStorageService,
   ).singleton(),
 
   // BLL
   sessionService: asClass<SessionService>(SessionService).singleton(),
+  boundaryService: asClass<BoundaryService>(BoundaryService).singleton(),
   obstacleService: asClass<ObstacleService>(ObstacleService).singleton(),
-  coordinateService: asClass<CoordinateService>(CoordinateService).singleton(),
+  positionService: asClass<PositionService>(PositionService).singleton(),
 
   // PL
   pingRouter: asClass<PingRouter>(PingRouter).singleton(),
