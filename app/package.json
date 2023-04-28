@@ -7,7 +7,7 @@
     "build": "tsc",
     "start:prod": "node ./dist/src/main.js",
     "start:dev": "concurrently \"tsc --watch\" \"nodemon -q dist/src/main.js\"",
-    "seed": "ts-node seed.ts"
+    "seed": "ts-node seed2.ts"
   },
   "keywords": [],
   "author": "",

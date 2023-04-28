@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Coordinate } from '@prisma/client';
 import { CoordinateRepository } from './src/data_access_layer/repositories/coordinate.repository';
 import Chance from 'chance';
 import { config } from 'dotenv';
+
 config();
 
 const chance = new Chance();
@@ -41,17 +42,21 @@ async function createCoordinates(sessionId: string) {
     const timestamp = new Date(chance.date({ year: new Date().getFullYear() }));
 
     // Create Position coordinate
-    await coordinateRepository.addPosition(sessionId, x, y, timestamp);
+    const coordinate: Coordinate = {
+      id: chance.hash({ length: 10 }), x: x, y: y, timestamp: timestamp, type: 'position',
+      sessionId: ''
+    }
+    await coordinateRepository.addPosition(coordinate);
+
 
     // Simulate collision avoidance event by inserting Obstacle coordinate
     if (chance.integer({ min: 1, max: 100 }) <= 10) {
+      const timestamp = new Date(chance.date({ year: new Date().getFullYear() }));
       const imagePath = `images/${chance.hash({ length: 10 })}`;
       const object = chance.word();
+      const coordinateData = {x, y, timestamp, sessionId: ''};
       await coordinateRepository.addObstacle(
-        sessionId,
-        x,
-        y,
-        timestamp,
+        coordinateData,
         imagePath,
         object,
       );
@@ -68,10 +73,7 @@ async function createCoordinates(sessionId: string) {
 
     for (const boundary of boundaryCoordinates) {
       await coordinateRepository.addBoundary(
-        sessionId,
-        boundary.x,
-        boundary.y,
-        timestamp,
+        {x: boundary.x, y: boundary.y, timestamp: timestamp, sessionId: ''},
       );
     }
   }
