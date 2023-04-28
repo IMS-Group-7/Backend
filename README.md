@@ -32,6 +32,12 @@ After building the container, run the following command to migrate the database:
 
     $ docker-compose exec backend npx prisma migrate deploy
 
+### Database seeding **(OPTIONAL)**
+
+After migrating the database, run the following command to seed the database:
+
+    $ docker-compose exec backend npm run seed
+
 ## Add Packages
 
     $ cd ./app/
