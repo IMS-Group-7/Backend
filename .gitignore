@@ -13,3 +13,6 @@ app/uploads
 
 #keyfile for google
 app/keyfile.json
+
+#session generates
+app/session*.txt
