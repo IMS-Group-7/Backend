@@ -3,6 +3,9 @@ import * as Joi from 'joi';
 export const validationSchema = Joi.object()
   .keys({
     PORT: Joi.number().required(),
-    MAXIMUM_REQUEST_BODY_SIZE: Joi.string().required(),
+    DATABASE_URL: Joi.string().required(),
+    GOOGLE_VISION_API_KEY: Joi.string().required(),
+    GOOGLE_CLOUD_STORAGE_BUCKET: Joi.string().required(),
+    GOOGLE_APPLICATION_CREDENTIALS: Joi.string().required(),
   })
   .unknown();

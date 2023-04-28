@@ -8,6 +8,8 @@ RUN npm install
 
 COPY ./app ./
 
+RUN npx prisma generate
+
 FROM node:16-alpine3.15 as production
 
 ARG NODE_ENV=production
@@ -19,5 +21,8 @@ COPY ./app/package*.json ./
 COPY ./app/.env ./
 
 RUN npm install --only=production
+RUN npx prisma generate
 
 COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/src/main.js"]

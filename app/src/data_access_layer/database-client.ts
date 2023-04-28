@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 class DatabaseClient {
-  private static instance: PrismaClient | null = null;
+  private static instance: PrismaClient;
 
   public static getInstance() {
     if (!DatabaseClient.instance) {
@@ -11,4 +11,5 @@ class DatabaseClient {
   }
 }
 
-export const databaseClient = DatabaseClient.getInstance();
+export default DatabaseClient;
+export { PrismaClient };

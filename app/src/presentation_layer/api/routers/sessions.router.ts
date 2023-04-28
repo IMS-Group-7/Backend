@@ -1,49 +1,72 @@
-import { Request, Response } from 'express';
-import AbstractRouter from './abstract-router';
+import { RouterInterface } from '../router.interface';
+import { NextFunction, Request, Response, Router } from 'express';
+import { SessionService } from '../../../business_logic_layer/services';
 
-class SessionsRouter extends AbstractRouter {
-  constructor() {
-    super('/sessions');
+export class SessionsRouter implements RouterInterface {
+  path: string;
+  router: Router;
+
+  constructor(private sessionService: SessionService) {
+    this.path = '/sessions';
+    this.router = Router();
+    this.initRoutes();
   }
 
-  protected initRoutes(): void {
-    /**
-     * Mower sends a request when a mowing session begins
-     */
-    this.router.post('/start', (req: Request, res: Response) => {
-      const { serial } = req.body;
-    });
+  initRoutes(): void {
+    // Mobile - Retrieve all mowing sessions
+    this.router.get(
+      '/',
+      async (_: Request, res: Response, next: NextFunction) => {
+        try {
+          const mowerSessions = await this.sessionService.findAll();
 
-    /**
-     * Mower sends a request when a mowing session ends
-     */
-    this.router.post('/stop', (req: Request, res: Response) => {
-      const { serial, sessionId } = req.body;
-    });
+          res.status(200).json(mowerSessions).end();
+        } catch (error: unknown) {
+          next(error);
+        }
+      },
+    );
 
-    /**
-     * Fetch all mowing sessions for a specific mower by its serial number
-     * URL: /sessions?serial=
-     */
-    this.router.get('/', (req: Request, res: Response) => {
-      const { serial } = req.query;
-    });
+    // Mobile - Get a specific mowing session by its ID
+    this.router.get(
+      '/:id',
+      async (req: Request, res: Response, next: NextFunction) => {
+        const { id } = req.params;
 
-    /**
-     * Fetch session by id, including postions, boundaries and obstacles
-     */
-    this.router.get('/:id', (req: Request, res: Response) => {
-      const { id } = req.params;
-    });
+        try {
+          const sessionWithObstacles =
+            await this.sessionService.findOneWithObstaclesById(id);
+          res.status(200).json(sessionWithObstacles).end();
+        } catch (error: unknown) {
+          next(error);
+        }
+      },
+    );
 
-    /**
-     * Mower sends its position every 3 seconds or so
-     */
-    this.router.post('/:id/positions', (req: Request, res: Response) => {
-      const { id } = req.params; // id is sessionId
-      const { sessionId, x, y } = req.body;
-    });
+    // Mower - Start a new mowing session
+    this.router.post(
+      '/start',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const startedSession = await this.sessionService.start();
+          res.status(201).json(startedSession).end();
+        } catch (error: unknown) {
+          next(error);
+        }
+      },
+    );
+
+    // Mower - Stop an ongoing mowing session
+    this.router.post(
+      '/stop',
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const stoppedSession = await this.sessionService.stop();
+          res.status(200).json(stoppedSession).end();
+        } catch (error: unknown) {
+          next(error);
+        }
+      },
+    );
   }
 }
-
-export const sessionsRouter = new SessionsRouter();

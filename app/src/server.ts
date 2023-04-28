@@ -1,18 +1,23 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './common/config';
-import { databaseClient } from './data_access_layer/database-client';
 import { errorMiddleware } from './presentation_layer/api/middlewares';
-import { collisionsRouter } from './presentation_layer/api/routers/collisions.router';
-import { pingRouter } from './presentation_layer/api/routers/ping.router';
+import { Dependencies } from './dependencies';
+import { Server as HttpServer, createServer } from 'http';
 
 class Server {
-  public expressApp: express.Application;
   public port: number;
+  private readonly dependencies: Dependencies;
+  private expressApp: express.Application;
+  private server: HttpServer;
 
-  constructor(port: number) {
-    this.expressApp = express();
+  constructor(port: number, dependencies: Dependencies) {
     this.port = port;
+    this.dependencies = dependencies;
+    this.expressApp = express();
+    this.server = createServer(this.expressApp);
+
+    // initialize socketIO server
+    this.dependencies.socketServer.init(this.server);
 
     this.connectDatabase();
     this.initMiddlewares();
@@ -26,15 +31,24 @@ class Server {
     this.expressApp.use(
       express.urlencoded({
         extended: false,
-        limit: config.MAXIMUM_REQUEST_BODY_SIZE,
       }),
     );
     this.expressApp.use(cors({ origin: '*' }));
   }
 
   private initRouters(): void {
-    this.expressApp.use(pingRouter.path, pingRouter.router);
-    this.expressApp.use(collisionsRouter.path, collisionsRouter.router);
+    this.expressApp.use(
+      this.dependencies.pingRouter.path,
+      this.dependencies.pingRouter.router,
+    );
+    this.expressApp.use(
+      this.dependencies.sessionsRouter.path,
+      this.dependencies.sessionsRouter.router,
+    );
+    this.expressApp.use(
+      this.dependencies.coordinatesRouter.path,
+      this.dependencies.coordinatesRouter.router,
+    );
   }
 
   private initErrorHandling(): void {
@@ -42,17 +56,17 @@ class Server {
   }
 
   private async connectDatabase(): Promise<void> {
-    await databaseClient.$connect();
+    await this.dependencies.databaseClient.$connect();
   }
 
   private async disconnectDatabaseBeforeExit(): Promise<void> {
     process.on('beforeExit', async () => {
-      await databaseClient.$disconnect();
+      await this.dependencies.databaseClient.$disconnect();
     });
   }
 
   public listen(): void {
-    this.expressApp
+    this.server
       .listen(this.port, () => {
         console.log(`Listening on port ${this.port}`);
       })
