@@ -7,7 +7,7 @@ import { Server as HttpServer, createServer } from 'http';
 class Server {
   public port: number;
   private readonly dependencies: Dependencies;
-  private expressApp: express.Application;
+  public expressApp: express.Application;
   private server: HttpServer;
 
   constructor(port: number, dependencies: Dependencies) {
@@ -73,6 +73,10 @@ class Server {
       .on('error', (error) => {
         console.log(error);
       });
+  }
+
+  public close() {
+    this.server.close();
   }
 }
 

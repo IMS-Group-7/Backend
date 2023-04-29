@@ -102,6 +102,9 @@ export class CoordinatesRouter implements RouterInterface {
       '/obstacles',
       multerMiddleware.single('image'),
       async (req: Request, res: Response, next: NextFunction) => {
+        console.log('Request Body:', req.body); // Add console log for request body
+        console.log('Request File:', req.file); // Add console log for request file
+        
         const fileBuffer: Buffer | undefined = req.file?.buffer;
         const { sessionId, x, y } = req.body;
         try {
@@ -143,3 +146,5 @@ export class CoordinatesRouter implements RouterInterface {
     );
   }
 }
+export { BoundaryService, ObstacleService, PositionService };
+

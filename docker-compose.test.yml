@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: Mower-Database
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mower-db
