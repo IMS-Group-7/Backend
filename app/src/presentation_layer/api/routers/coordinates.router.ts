@@ -101,7 +101,7 @@ export class CoordinatesRouter implements RouterInterface {
       multerMiddleware.single('image'),
       async (req: Request, res: Response, next: NextFunction) => {
         const fileBuffer: Buffer | undefined = req.file?.buffer;
-        const { sessionId, x, y } = req.body;
+        const { x, y } = req.body;
         try {
           if (!isNumber(x) || !isNumber(y) || !fileBuffer)
             throw new BadRequestError(
