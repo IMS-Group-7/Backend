@@ -75,7 +75,7 @@ class Server {
       });
   }
 
-  public close() {
+  private close() {
     this.server.close();
   }
 }

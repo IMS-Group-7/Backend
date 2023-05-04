@@ -5,11 +5,9 @@ class DatabaseClient {
 
   public static getInstance() {
     if (!DatabaseClient.instance) {
-      console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
       DatabaseClient.instance = new PrismaClient();
     } else {
-      console.log("Using existing instance of PrismaClient");
-      console.log("DATABASE_URL:", process.env.DATABASE_URL);
+      console.log('Database client instance already exists');
     }
     return DatabaseClient.instance;
   }
