@@ -1,8 +1,10 @@
-import { NotFoundError } from '../../common/errors';
+import { BadRequestError, NotFoundError } from '../../common/errors';
 import {
   Coordinate,
   CoordinateRepository,
   Obstacle,
+  SessionRepository,
+  Session,
 } from '../../data_access_layer/repositories';
 import {
   ImageClassificationService,
@@ -15,32 +17,40 @@ export class ObstacleService {
     private coordinateRepository: CoordinateRepository,
     private imageClassificationService: ImageClassificationService,
     private fileStorageService: GoogleCloudStorageService,
+    private sessionRepository: SessionRepository,
   ) {}
 
   /**
    * Adds a new obstacle coordinate with associated image classification data in the database.
    *
-   * @param {string} sessionId - The ID of the session.
    * @param {number} x - The x coordinate.
    * @param {number} y - The y coordinate.
    * @param {Buffer} fileBuffer - A buffer containing the image data.
-   * @returns {Promise<{ object: string }>} - An object containing the classification data for the obstacle.
+   * @returns {Promise<{ object: string }>} An object containing the classification data for the obstacle.
+   * @throws {BadRequestError} If there is no active mowing session.
    */
   public async add(
-    sessionId: string,
     x: number,
     y: number,
     fileBuffer: Buffer,
   ): Promise<{ object: string }> {
+    const activeSession: Session | null =
+      await this.sessionRepository.findActiveMowingSession();
+
+    if (!activeSession) throw new BadRequestError('No active session found');
+
     const object: string = await this.imageClassificationService.classifyImage(
       fileBuffer,
     );
 
-    const fileUrl = await this.fileStorageService.upload(uuidv4(), fileBuffer);
+    const fileUrl: string = await this.fileStorageService.upload(
+      uuidv4(),
+      fileBuffer,
+    );
 
     await this.coordinateRepository.addObstacle(
       {
-        sessionId,
+        sessionId: activeSession.id,
         x,
         y,
         timestamp: new Date(),
@@ -66,7 +76,8 @@ export class ObstacleService {
     const obstacle: (Obstacle & { coordinate: Coordinate }) | null =
       await this.coordinateRepository.findObstacleById(id);
 
-    if (!obstacle) throw new NotFoundError(`Obstacle with ID ${id} not found.`);
+    if (!obstacle)
+      throw new NotFoundError(`Obstacle with ID "${id}" not found`);
 
     return obstacle;
   }

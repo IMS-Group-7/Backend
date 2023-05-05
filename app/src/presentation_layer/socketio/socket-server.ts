@@ -2,15 +2,7 @@ import { Socket, Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { BadRequestError, HttpError } from '../../common/errors';
-import {
-  DrivingModeEvent,
-  EventType,
-  PositionUpdateEvent,
-  MowerRegistrationEvent,
-  SocketEvent,
-  isValidSocketEvent,
-} from './event.interfaces';
-
+import { EventType, SocketEvent, isValidSocketEvent } from './event.interfaces';
 
 type Client = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
@@ -27,7 +19,7 @@ export class SocketServer {
    */
   public init(server: HttpServer): void {
     this.io = new SocketIOServer(server);
-  
+
     this.io.on('connection', (client: Client) => {
       this.events(client);
       this.onMowerDisconnet(client);
@@ -46,31 +38,27 @@ export class SocketServer {
 
       if (!eventData) return;
 
-      // TODO: refactor this section
-      // TODO: use BLL services where it makes sense
-
       if (eventData.type === EventType.MOWER_REGISTRATION) {
-        this.mowerId = client.id;
+        if (!this.mowerId) this.mowerId = client.id;
+        else
+          this.handleError(
+            client,
+            new HttpError('Mower client is already online and registered', 400),
+          );
         return;
       }
-
-      if (eventData.type === EventType.MOWER_POSITION) {
-        client.broadcast.emit('message', JSON.stringify(eventData));
-        return;
-      }
-      
 
       if (eventData.type === EventType.DRIVING_MODE) {
         if (this.mowerId)
           client.to(this.mowerId).emit('message', JSON.stringify(eventData));
-        else this.handleError(client, new HttpError('Mower is offline.', 503));
+        else this.handleError(client, new HttpError('Mower is offline', 503));
         return;
       }
 
       if (eventData.type === EventType.MOWER_COMMAND) {
         if (this.mowerId)
           client.to(this.mowerId).emit('message', JSON.stringify(eventData));
-        else this.handleError(client, new HttpError('Mower is offline.', 503));
+        else this.handleError(client, new HttpError('Mower is offline', 503));
         return;
       }
     });

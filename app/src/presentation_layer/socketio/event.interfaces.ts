@@ -1,7 +1,6 @@
 export enum EventType {
   MOWER_REGISTRATION = 'MOWER_REGISTRATION',
   MOWER_COMMAND = 'MOWER_COMMAND',
-  MOWER_POSITION = 'MOWER_POSITION',
   DRIVING_MODE = 'DRIVING_MODE',
 }
 
@@ -12,15 +11,6 @@ export interface MowerRegistrationEvent {
   };
 }
 
-export interface PositionUpdateEvent {
-  type: EventType.MOWER_POSITION;
-  data: {
-    x: number;
-    y: number;
-    sessionId: string;
-  };
-}
-
 export interface DrivingModeEvent {
   type: EventType.DRIVING_MODE;
   data: {
@@ -28,7 +18,9 @@ export interface DrivingModeEvent {
   };
 }
 
-enum MowerCommandDirection {
+enum MowerCommandAction {
+  START = 'start',
+  STOP = 'stop',
   FORWARD = 'forward',
   BACKWARD = 'backward',
   LEFT = 'left',
@@ -38,13 +30,12 @@ enum MowerCommandDirection {
 export interface MowerCommandEvent {
   type: EventType.MOWER_COMMAND;
   data: {
-    direction: MowerCommandDirection;
+    action: MowerCommandAction;
   };
 }
 
 export type SocketEvent =
   | MowerRegistrationEvent
-  | PositionUpdateEvent
   | DrivingModeEvent
   | MowerCommandEvent;
 
@@ -59,28 +50,22 @@ export function isValidSocketEvent(event: any): event is SocketEvent {
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
+        'role' in event.data &&
         event.data.role === 'mower'
-      );
-    case EventType.MOWER_POSITION:
-      return (
-        typeof event.data === 'object' &&
-        event.data !== null &&
-        'x' in event.data &&
-        'y' in event.data &&
-        'sessionId' in event.data
       );
     case EventType.DRIVING_MODE:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
+        'mode' in event.data &&
         (event.data.mode === 'manual' || event.data.mode === 'auto')
       );
     case EventType.MOWER_COMMAND:
       return (
         typeof event.data === 'object' &&
         event.data !== null &&
-        'direction' in event.data &&
-        Object.values(MowerCommandDirection).includes(event.data.direction)
+        'action' in event.data &&
+        Object.values(MowerCommandAction).includes(event.data.action)
       );
     default:
       return false;
