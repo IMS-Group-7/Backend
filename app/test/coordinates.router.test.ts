@@ -38,7 +38,6 @@ describe('CoordinatesRouter', () => {
   describe('POST /positions', () => {
     test('should create a new position coordinate', async () => {
       const requestBody = {
-        sessionId: sessionId,
         x: 10,
         y: 20,
       };
@@ -46,7 +45,7 @@ describe('CoordinatesRouter', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('sessionId', requestBody.sessionId);
+      expect(response.body).toHaveProperty('sessionId', sessionId);
       expect(response.body).toHaveProperty('x', requestBody.x);
       expect(response.body).toHaveProperty('y', requestBody.y);
 
@@ -70,7 +69,6 @@ describe('CoordinatesRouter', () => {
   
     beforeEach(() => {
       requestBody = {
-        sessionId,
         x: 0,
         y: 0,
       };
@@ -81,7 +79,7 @@ describe('CoordinatesRouter', () => {
   
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('sessionId', requestBody.sessionId);
+      expect(response.body).toHaveProperty('sessionId', sessionId);
       expect(response.body).toHaveProperty('x', requestBody.x);
       expect(response.body).toHaveProperty('y', requestBody.y);
     });
@@ -104,7 +102,6 @@ describe('GET /active-session-path', () => {
     ];
     for (const coordinate of coordinates) {
         await request(targetUrl).post('/coordinates/positions').send({
-          sessionId,
           x: coordinate.x,
           y: coordinate.y,
           timestamp: new Date(),
@@ -187,7 +184,6 @@ describe('GET /active-session-path', () => {
       const randomCoordinate = session.body.coordinate [randomInt(0,length)]
       const obstacle = randomCoordinate.obstacle;
       const response = await request(targetUrl).get(`/coordinates/obstacles/${obstacle.id}`);
-      console.log("RESPOSNED ", response.body);
 
       expect(response.status).toBe(200);
       const retrievedObstacle = response.body;
