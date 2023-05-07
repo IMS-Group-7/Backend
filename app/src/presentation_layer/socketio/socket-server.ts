@@ -1,8 +1,13 @@
 import { Socket, Server as SocketIOServer } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { BadRequestError, HttpError } from '../../common/errors';
-import { EventType, SocketEvent, isValidSocketEvent } from './event.interfaces';
+import {
+  EventType,
+  SocketEvent,
+  isValidSocketEvent,
+  SocketErrorCode,
+} from './event.interfaces';
+import { SocketError } from './socket.error';
 
 type Client = Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
@@ -39,26 +44,29 @@ export class SocketServer {
       if (!eventData) return;
 
       if (eventData.type === EventType.MOWER_REGISTRATION) {
-        if (!this.mowerId) this.mowerId = client.id;
-        else
-          this.handleError(
-            client,
-            new HttpError('Mower client is already online and registered', 400),
-          );
+        this.mowerId = client.id;
         return;
       }
 
       if (eventData.type === EventType.DRIVING_MODE) {
         if (this.mowerId)
           client.to(this.mowerId).emit('message', JSON.stringify(eventData));
-        else this.handleError(client, new HttpError('Mower is offline', 503));
+        else
+          this.handleError(
+            client,
+            new SocketError(SocketErrorCode.MOWER_OFFLINE),
+          );
         return;
       }
 
       if (eventData.type === EventType.MOWER_COMMAND) {
         if (this.mowerId)
           client.to(this.mowerId).emit('message', JSON.stringify(eventData));
-        else this.handleError(client, new HttpError('Mower is offline', 503));
+        else
+          this.handleError(
+            client,
+            new SocketError(SocketErrorCode.MOWER_OFFLINE),
+          );
         return;
       }
     });
@@ -79,7 +87,7 @@ export class SocketServer {
       const parsedData = JSON.parse(data);
 
       if (!isValidSocketEvent(parsedData)) {
-        throw new BadRequestError('Invalid message format');
+        throw new SocketError(SocketErrorCode.INVALID_MESSAGE_FORMAT);
       }
 
       return parsedData as SocketEvent;
@@ -87,9 +95,7 @@ export class SocketServer {
       if (error instanceof SyntaxError) {
         this.handleError(
           client,
-          new BadRequestError(
-            'Invalid message format due to syntax error. Ensure that the JSON data is properly stringified.',
-          ),
+          new SocketError(SocketErrorCode.INVALID_MESSAGE_FORMAT),
         );
       } else this.handleError(client, error);
     }
@@ -101,17 +107,12 @@ export class SocketServer {
    * @param client The socket client instance.
    * @param error The error object.
    */
-  private handleError(client: Client, error: HttpError | unknown): void {
-    if (error instanceof HttpError) {
-      this.io.to(client.id).emit('error', JSON.stringify(error.toJSON()));
-    } else {
-      const unknownError = new HttpError(
-        error instanceof Error ? error.message : 'Unknown error',
-        500,
-      );
-      this.io
-        .to(client.id)
-        .emit('error', JSON.stringify(unknownError.toJSON()));
+  private handleError(client: Client, error: SocketError | unknown): void {
+    if (error instanceof SocketError)
+      this.io.to(client.id).emit('message', JSON.stringify(error.toJSON()));
+    else {
+      const error: SocketError = new SocketError(SocketErrorCode.UNKNOWN_ERROR);
+      this.io.to(client.id).emit('message', JSON.stringify(error.toJSON()));
     }
   }
 
