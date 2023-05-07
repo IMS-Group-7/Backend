@@ -38,6 +38,10 @@ After migrating the database, run the following command to seed the database:
 
     $ docker-compose exec backend npm run seed
 
+### Testing through the container **(OPTIONAL)**
+
+    $ docker-compose exec backend npm run test
+
 ## Add Packages
 
     $ cd ./app/
