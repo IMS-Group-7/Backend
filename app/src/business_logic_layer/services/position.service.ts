@@ -4,7 +4,7 @@ import {
   SessionRepository,
   Session,
 } from '../../data_access_layer/repositories';
-import { NotFoundError } from '../../common/errors';
+import { BadRequestError, NotFoundError } from '../../common/errors';
 import { CoordinateTypeEnum } from '../../data_access_layer/coordinate-type.enum';
 
 export class PositionService {
@@ -15,18 +15,19 @@ export class PositionService {
 
   /**
    * Adds a new position coordinate to the database.
-   * @param {string} sessionId - The ID of the session associated with the coordinate.
    * @param {number} x - The x coordinate of the new position.
    * @param {number} y - The y coordinate of the new position.
    * @returns {Promise<Coordinate>} The new position coordinate object.
+   * @throws {BadRequestError} If there is no active mowing session.
    */
-  public async add(
-    sessionId: string,
-    x: number,
-    y: number,
-  ): Promise<Coordinate> {
+  public async add(x: number, y: number): Promise<Coordinate> {
+    const activeSession: Session | null =
+      await this.sessionRepository.findActiveMowingSession();
+
+    if (!activeSession) throw new BadRequestError('No active session found');
+
     const position: Coordinate = await this.coordinateRepository.addPosition({
-      sessionId,
+      sessionId: activeSession.id,
       x,
       y,
       timestamp: new Date(),
@@ -46,7 +47,7 @@ export class PositionService {
     const activeSession: Session | null =
       await this.sessionRepository.findActiveMowingSession();
 
-    if (!activeSession) throw new NotFoundError('No active mowing session.');
+    if (!activeSession) throw new NotFoundError('No active session found');
 
     // Traveled path (Position & Obstacles) for current session, in ascending order.
     const path = await this.coordinateRepository.findAllWithFilter({

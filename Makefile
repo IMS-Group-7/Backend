@@ -12,3 +12,6 @@ migrate-dev:
 
 migrate-prod:
 	docker-compose exec backend npx prisma migrate deploy
+
+seed:
+	docker-compose exec backend npm run seed

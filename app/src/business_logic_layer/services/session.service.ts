@@ -19,7 +19,7 @@ export class SessionService {
       await this.sessionRepository.findActiveMowingSession();
 
     if (activeSession)
-      throw new BadRequestError(`A mowing session is already active.`);
+      throw new BadRequestError(`A mowing session is already active`);
 
     const session: Session = await this.sessionRepository.create({
       startTime: new Date(),
@@ -39,8 +39,7 @@ export class SessionService {
     const activeSession =
       await this.sessionRepository.findActiveMowingSession();
 
-    if (!activeSession)
-      throw new NotFoundError('There is no active mowing session.');
+    if (!activeSession) throw new NotFoundError('No active session found');
 
     const stoppedSession = await this.sessionRepository.updateById(
       activeSession.id,
@@ -73,7 +72,7 @@ export class SessionService {
     const session: SessionWithObstacles =
       await this.sessionRepository.findOneWithObstaclesById(id);
 
-    if (!session) throw new NotFoundError(`Session with ID ${id} not found`);
+    if (!session) throw new NotFoundError(`Session with ID "${id}" not found`);
 
     const obstacleCount: number = session.coordinate.length;
 

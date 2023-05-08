@@ -7,7 +7,7 @@ import {
   ObstacleService,
   PositionService,
 } from '../../../business_logic_layer/services';
-import { isNumber, isString } from '../helpers';
+import { isNumber } from '../helpers';
 
 export class CoordinatesRouter implements RouterInterface {
   path: string;
@@ -28,15 +28,14 @@ export class CoordinatesRouter implements RouterInterface {
     this.router.post(
       '/positions',
       async (req: Request, res: Response, next: NextFunction) => {
-        const { sessionId, x, y } = req.body;
+        const { x, y } = req.body;
         try {
-          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+          if (!isNumber(x) || !isNumber(y))
             throw new BadRequestError(
-              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
+              "Invalid input format: 'x' and 'y' must be valid numbers.",
             );
 
           const createdCoordinate = await this.positionService.add(
-            sessionId,
             Number(x),
             Number(y),
           );
@@ -51,15 +50,14 @@ export class CoordinatesRouter implements RouterInterface {
     this.router.post(
       '/boundaries',
       async (req: Request, res: Response, next: NextFunction) => {
-        const { sessionId, x, y } = req.body;
+        const { x, y } = req.body;
         try {
-          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+          if (!isNumber(x) || !isNumber(y))
             throw new BadRequestError(
-              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
+              "Invalid input format: 'x' and 'y' must be valid numbers.",
             );
 
           const createdCoordinate = await this.boundaryService.add(
-            sessionId,
             Number(x),
             Number(y),
           );
@@ -103,20 +101,14 @@ export class CoordinatesRouter implements RouterInterface {
       multerMiddleware.single('image'),
       async (req: Request, res: Response, next: NextFunction) => {
         const fileBuffer: Buffer | undefined = req.file?.buffer;
-        const { sessionId, x, y } = req.body;
+        const { x, y } = req.body;
         try {
-          if (!isNumber(x) || !isNumber(y) || !isString(sessionId))
+          if (!isNumber(x) || !isNumber(y) || !fileBuffer)
             throw new BadRequestError(
-              "Invalid input format: 'x' and 'y' must be valid numbers, and 'sessionId' must be a string.",
-            );
-
-          if (!fileBuffer)
-            throw new BadRequestError(
-              "Invalid input format: 'image' is required.",
+              "Invalid input format: 'x' and 'y' must be valid numbers, and 'image' is required.",
             );
 
           const classifiedImage = await this.obstacleService.add(
-            sessionId,
             Number(x),
             Number(y),
             fileBuffer,
