@@ -2,8 +2,28 @@ export enum EventType {
   MOWER_REGISTRATION = 'MOWER_REGISTRATION',
   MOWER_COMMAND = 'MOWER_COMMAND',
   DRIVING_MODE = 'DRIVING_MODE',
+  ERROR = 'ERROR',
 }
 
+/**
+ * Socket Error
+ */
+export enum SocketErrorCode {
+  UNKNOWN_ERROR = 0,
+  INVALID_MESSAGE_FORMAT = 1,
+  MOWER_OFFLINE = 10,
+}
+
+export interface ErrorEvent {
+  type: EventType.ERROR;
+  data: {
+    code: SocketErrorCode;
+  };
+}
+
+/**
+ * Mower Registration
+ */
 export interface MowerRegistrationEvent {
   type: EventType.MOWER_REGISTRATION;
   data: {
@@ -11,6 +31,9 @@ export interface MowerRegistrationEvent {
   };
 }
 
+/**
+ * Driving Mode
+ */
 export interface DrivingModeEvent {
   type: EventType.DRIVING_MODE;
   data: {
@@ -18,6 +41,9 @@ export interface DrivingModeEvent {
   };
 }
 
+/**
+ * Mower Command
+ */
 enum MowerCommandAction {
   START = 'start',
   STOP = 'stop',
@@ -34,6 +60,9 @@ export interface MowerCommandEvent {
   };
 }
 
+/**
+ * Socket events and validations
+ */
 export type SocketEvent =
   | MowerRegistrationEvent
   | DrivingModeEvent
