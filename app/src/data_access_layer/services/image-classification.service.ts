@@ -13,10 +13,10 @@ export class ImageClassificationService {
   /**
    * Classify an image using the Vision API.
    * @param {Buffer} bufferData - The image data as a Buffer.
-   * @returns {Promise<string>} The classification label for the image.
+   * @returns {Promise<string>} The classification label for the image, or null if no label annotations are found.
    * @throws {NotFoundError} If no label annotations are found in the image.
    */
-  public async classifyImage(bufferData: Buffer): Promise<string> {
+  public async classifyImage(bufferData: Buffer): Promise<string | null> {
     const request = {
       image: {
         content: bufferData,
@@ -34,11 +34,9 @@ export class ImageClassificationService {
     if (labelAnnotations && labelAnnotations.length > 0) {
       const label: string | null | undefined = labelAnnotations[0].description;
 
-      if (!label) throw new NotFoundError('No labels detected');
-
+      if (!label) return null;
       return label;
     }
-
-    throw new NotFoundError('No labels detected');
+    return null;
   }
 }
