@@ -26,7 +26,7 @@ export class ObstacleService {
    * @param {number} x - The x coordinate.
    * @param {number} y - The y coordinate.
    * @param {Buffer} fileBuffer - A buffer containing the image data.
-   * @returns {Promise<{ object: string }>} An object containing the classification data for the obstacle.
+   * @returns {Promise<{ object: string }>} An object containing the classification data for the obstacle, or "Unknown" if no label was found.
    * @throws {BadRequestError} If there is no active mowing session.
    */
   public async add(
@@ -39,9 +39,9 @@ export class ObstacleService {
 
     if (!activeSession) throw new BadRequestError('No active session found');
 
-    const object: string = await this.imageClassificationService.classifyImage(
-      fileBuffer,
-    );
+    const classification: string | null =
+      await this.imageClassificationService.classifyImage(fileBuffer);
+    const object = classification ? classification : 'Unknown';
 
     const fileUrl: string = await this.fileStorageService.upload(
       uuidv4(),
