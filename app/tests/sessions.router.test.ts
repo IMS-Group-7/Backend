@@ -26,21 +26,24 @@ describe('Sessions Router', () => {
     it('Should fetch a mowing session by ID', async () => {
       // Create a new session to get its ID
       const newSessionRes = await request(SESSIONS_URL).post('/start');
+      expect(newSessionRes.body).toHaveProperty('id');
       const sessionId = newSessionRes.body.id;
 
       // Get session by ID
       const res = await request(SESSIONS_URL).get(`/${sessionId}`);
 
       expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('id');
       expect(res.body.id).toBe(sessionId);
     });
 
-    it('Should return 404 error, indicating the mowing session is not found', async () => {
+    it('Should return 404 error, indicating the mowing session was not found', async () => {
       const sessionId = 'abc123';
 
       const res = await request(SESSIONS_URL).get(`/${sessionId}`);
 
       expect(res.status).toBe(404);
+      expect(res.body).toBeInstanceOf(Object);
     });
   });
 
