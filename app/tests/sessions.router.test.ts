@@ -6,7 +6,7 @@ describe('Sessions Router', () => {
   const SESSIONS_URL = `${SERVER_URL}/sessions`;
 
   describe('GET /sessions', () => {
-    it('Should return all mowing sessions', async () => {
+    it('Should fetch all mowing sessions', async () => {
       const res = await request(SESSIONS_URL).get('/');
 
       expect(res.status).toBe(200);
@@ -23,7 +23,7 @@ describe('Sessions Router', () => {
       await request(SESSIONS_URL).post('/stop');
     });
 
-    it('Should return a mowing session by ID', async () => {
+    it('Should fetch a mowing session by ID', async () => {
       // Create a new session to get its ID
       const newSessionRes = await request(SESSIONS_URL).post('/start');
       const sessionId = newSessionRes.body.id;
@@ -35,7 +35,7 @@ describe('Sessions Router', () => {
       expect(res.body.id).toBe(sessionId);
     });
 
-    it('Should return 404 error, indicating the session is found', async () => {
+    it('Should return 404 error, indicating the mowing session is not found', async () => {
       const sessionId = 'abc123';
 
       const res = await request(SESSIONS_URL).get(`/${sessionId}`);
