@@ -216,29 +216,40 @@ describe('Coordinates Router', () => {
       await request(SESSIONS_URL).post('/stop');
     });
     it('should return the obstacle data for the given obstacleId', async () => {
+
       const createdSession = await request(SESSIONS_URL).post('/start');
       const sessionId = createdSession.body.id;
       const session = await request(SESSIONS_URL).get(`/${sessionId}`);
+
       expect(session.status).toBe(200);
-      expect(session.body).toHaveProperty('coordinate', expect.any(Array));
-      const length = session.body.coordinate.length;
-      expect(session.body.coordinate.length).toBeGreaterThanOrEqual(0);
-      if (length != 0) {
-        const randomCoordinate = session.body.coordinate[randomInt(0, length)];
-        const obstacle = randomCoordinate.obstacle;
-        const response = await request(COORDINATES_URL).get(
-          `/obstacles/${obstacle.id}`,
+      const sessionBody = session.body;
+      expect(sessionBody).toHaveProperty('coordinate', expect.any(Array));
+
+      const coordinateArrayLength = sessionBody.coordinate.length;
+      expect(coordinateArrayLength).toBeGreaterThanOrEqual(0);
+      const sessionHasCoordinates = coordinateArrayLength > 0;
+
+      if (sessionHasCoordinates) {
+        // Get a randomly selected coordinate object from the current session that was retrieved earlier
+        const randomCoordinateIx = sessionBody.coordinate[randomInt(0, coordinateArrayLength)];
+        const randomCoordinate = sessionBody.coordinate[randomCoordinateIx];
+        // Extract the obstacle object from the randomly selected coordinate
+        const extractedObstacle = randomCoordinate.obstacle;
+        // Get this specific obstacle's information from the API
+        const detailedObstacleResponse = await request(COORDINATES_URL).get(
+          `/obstacles/${extractedObstacle.id}`,
         );
 
-        expect(response.status).toBe(200);
-        const retrievedObstacle = response.body;
-        expect(retrievedObstacle).toBeInstanceOf(Object);
+        // The obstacle exists
+        expect(detailedObstacleResponse.status).toBe(200);
+        const detailedObstacleInformation = detailedObstacleResponse.body;
 
-        expect(obstacle).toHaveProperty('id', retrievedObstacle.id);
-        expect(obstacle).toHaveProperty('coordinateId', randomCoordinate.id);
-        expect(obstacle).toHaveProperty('object', retrievedObstacle.object);
-      } else {
-        console.log('Empty coordinate array, skipping tests');
+        expect(extractedObstacle).toBeInstanceOf(Object);
+        expect(extractedObstacle).toHaveProperty('id', detailedObstacleInformation.id);
+        // The obstacle contains a value called coordinateId, so it should match the randomly selected coordinate's id that was retrieved earlier
+        expect(extractedObstacle).toHaveProperty('coordinateId', randomCoordinate.id);
+        // The obstacle of the randomly selected coordinate should match the retrieved obstacles object type
+        expect(extractedObstacle).toHaveProperty('object', detailedObstacleInformation.object);
       }
     });
 
