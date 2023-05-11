@@ -5,7 +5,6 @@ import {
   Session,
 } from '../../data_access_layer/repositories';
 import { BadRequestError, NotFoundError } from '../../common/errors';
-import { CoordinateTypeEnum } from '../../data_access_layer/coordinate-type.enum';
 
 export class PositionService {
   constructor(
@@ -52,15 +51,7 @@ export class PositionService {
     // Traveled path (Position & Obstacles) for current session, in ascending order.
     const path = await this.coordinateRepository.findAllWithFilter({
       where: {
-        AND: [
-          { sessionId: activeSession.id },
-          {
-            OR: [
-              { type: CoordinateTypeEnum.POSITION },
-              { type: CoordinateTypeEnum.OBSTACLE },
-            ],
-          },
-        ],
+        sessionId: activeSession.id,
       },
       orderBy: {
         timestamp: 'asc',

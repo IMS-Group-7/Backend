@@ -45,5 +45,6 @@ After migrating the database, run the following command to seed the database:
 
 ## Testing
 
-    $ cd ./app/
-    $ npm test
+The tests must be run inside the docker development container. You can run the tests using the following command:
+
+    $ docker-compose exec backend npx jest -i
