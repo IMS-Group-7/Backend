@@ -122,8 +122,8 @@ function saveGridToFile(filename: string) {
   for (const point of path) {
     await createCoordinates(session.id, point.x, point.y);
   }
-  
-  saveGridToFile(`session_${session.id}_map_visualization.txt`);
+  // Uncomment if want .txt files of the data representation  
+  // saveGridToFile(`session_${session.id}_map_visualization.txt`);
 }
 }
 
