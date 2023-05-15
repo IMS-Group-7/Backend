@@ -2,7 +2,7 @@ import multer from 'multer';
 import { Request } from 'express';
 import { BadRequestError } from '../../../common/errors';
 
-const allowedMimeTypes = ['image/png', 'image/jpeg', 'text/plain'];
+const allowedMimeTypes = ['image/jpeg', 'text/plain'];
 
 const storage = multer.memoryStorage();
 
