@@ -21,7 +21,7 @@ export class GoogleCloudStorageService {
   public async upload(fileName: string, bufferData: Buffer): Promise<string> {
     const file = this.bucket.file(fileName);
     const stream = file.createWriteStream();
-
+    
     return new Promise((resolve, reject) => {
       stream.on('error', (_) => {
         reject(

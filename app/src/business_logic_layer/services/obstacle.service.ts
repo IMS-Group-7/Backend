@@ -42,9 +42,10 @@ export class ObstacleService {
     const classification: string | null =
       await this.imageClassificationService.classifyImage(fileBuffer);
     const object = classification ? classification : 'Unknown';
-
+    
+    const fileName = uuidv4() + '.jpg';
     const fileUrl: string = await this.fileStorageService.upload(
-      uuidv4(),
+      fileName,
       fileBuffer,
     );
 
