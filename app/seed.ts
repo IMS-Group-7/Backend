@@ -99,7 +99,9 @@ async function createCoordinates(sessionId: string, x: number, y: number) {
   // Simulate collision avoidance event by inserting Obstacle coordinate
   if (chance.integer({ min: 1, max: 100 }) <= 10) {
     const timestamp = new Date(chance.date({ year: new Date().getFullYear() }));
-    const imagePath = `images/${chance.hash({ length: 10 })}`;
+    const randomImageStrings = ["https://storage.googleapis.com/mower-images/2a94e7e0-0d13-4c4b-9983-aadd30963d39.jpg", "https://storage.googleapis.com/mower-images/a192423a-f966-40d0-af92-cddd0432b782.jpg"]
+    const selectedRandomImage = randomImageStrings[Math.floor(Math.random() * randomImageStrings.length)];
+    const imagePath = selectedRandomImage;
     const object = chance.word();
     const coordinateData = { x, y, timestamp, sessionId };
     await coordinateRepository.addObstacle(coordinateData, imagePath, object);
